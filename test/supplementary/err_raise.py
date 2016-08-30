@@ -1,0 +1,1 @@
+raise Exception('err_raise.py')
