@@ -27,7 +27,7 @@ def parseargs(argv):
 
     parse_new_host = parse_new_sub.add_parser('host')
     parse_new_host.add_argument('host')
-    parse_new_host.add_argument('path', help='remote path')
+    parse_new_host.add_argument('path', nargs='?', help='remote path')
     parse_new_host.set_defaults(action=Actions.NEW_HOST)
 
     parse_new_alias = parse_new_sub.add_parser('alias')
