@@ -1,6 +1,9 @@
 class Actions(object):
     LIST = 'LIST'
     RUN = 'RUN'
+    RESTART = 'RESTART'
+    STOP = 'STOP'
+    REMOVE = 'REMOVE'
 
 def parseargs(argv):
     import argparse
@@ -21,6 +24,18 @@ def parseargs(argv):
     parse_run.add_argument('--host', help='host')
     parse_run.add_argument('--path', help='remote path')
     parse_run.set_defaults(action=Actions.RUN)
+
+    parse_restart = subparse.add_parser('restart')
+    parse_restart.add_argument('tag')
+    parse_restart.set_defaults(action=Actions.RESTART)
+
+    parse_stop = subparse.add_parser('stop')
+    parse_stop.add_argument('tag')
+    parse_stop.set_defaults(action=Actions.STOP)
+
+    parse_remove = subparse.add_parser('rm')
+    parse_remove.add_argument('tag')
+    parse_remove.set_defaults(action=Actions.REMOVE)
 
     args = parser.parse_args(argv)
     return args

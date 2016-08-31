@@ -13,19 +13,11 @@ remotedocker run -t tagname python test.py [args...] << using the latest host
 remotedocker run -t tagname -h old@host python test.py [args...] << using a given host
 remotedocker run -t tagname -h new@host -p /remote/path python test.py [args...] << using a given (new) host
 
-remotedocker run -t tag -h alias@host ...
-remotedocker run -t tag -h some@host ... << point to the same thing
-
-
-# conflict
-remotedocker run -t tagname xxxxxxx
-$ tag conflicted !
-$ do you want to discard to old run ? (y/n) y
--> docker rm --force {container_name}
--> reset the step to 'start'
--> run the designated 'run'
-
 remotedocker run -t tagname << continue the job, or fetch the updates
+
+remotedocker restart <tag>
+remotedocker stop <tag>
+remotedocker remove <tag>
 
 Steps:
 

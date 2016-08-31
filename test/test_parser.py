@@ -40,3 +40,21 @@ class ParserTest(unittest.TestCase):
     def test_run_err_without_tag(self):
         import argparse
         self.assertRaises(argparse.ArgumentError, parseargs, ['run', 'python', 'test.py', 'a', '--b=c'])
+
+    def test_restart(self):
+        args = parseargs(['restart', 'tag'])
+        print(args)
+        self.assertEqual(args.action, Actions.RESTART)
+        self.assertEqual(args.tag, 'tag')
+
+    def test_stop(self):
+        args = parseargs(['stop', 'tag'])
+        print(args)
+        self.assertEqual(args.action, Actions.STOP)
+        self.assertEqual(args.tag, 'tag')
+
+    def test_rm(self):
+        args = parseargs(['rm', 'tag'])
+        print(args)
+        self.assertEqual(args.action, Actions.REMOVE)
+        self.assertEqual(args.tag, 'tag')
