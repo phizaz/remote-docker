@@ -52,6 +52,11 @@ def init_db():
 
 
 def get_hosts():
+    from os.path import exists
+
+    if not exists(path_file_hosts()):
+        init_hosts()
+
     with open(path_file_hosts()) as handle:
         import yaml
         hosts = yaml.load(handle)
@@ -59,6 +64,11 @@ def get_hosts():
 
 
 def get_db():
+    from os.path import exists
+
+    if not exists(path_file_db()):
+        init_db()
+
     with open(path_file_db()) as handle:
         import yaml
         db = yaml.load(handle)
