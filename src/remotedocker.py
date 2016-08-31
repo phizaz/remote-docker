@@ -62,9 +62,6 @@ def main():
 
     func_map = {
         Actions.LIST: act_list,
-        Actions.DEFAULT: act_set_default_host,
-        Actions.NEW_HOST: act_new_host,
-        Actions.NEW_ALIAS: act_new_alias,
         Actions.RUN: act_run
     }
 
