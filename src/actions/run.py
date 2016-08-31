@@ -79,9 +79,19 @@ class NormalFlow(Flow):
     def sync_down(self):
         pass
 
-
-def run(job, db, flow_cls):
-    assert issubclass(flow_cls, Flow), 'flow_cls must be inherited from Flow'
+def run_job(job, db, flow_cls):
     flow = flow_cls(job=job, db=db)
     flow.start()
+
+def run(tag, db, flow_cls):
+    assert issubclass(flow_cls, Flow), 'flow_cls must be inherited from Flow'
+    assert isinstance(db, list)
+    job = None
+
+    for each in db:
+        if each.tag == tag:
+            job = each
+            break
+
+    run_job(job, db, flow_cls)
 
