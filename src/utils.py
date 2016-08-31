@@ -4,6 +4,52 @@ class Files(object):
     IGNORE = '.remotedignore'
 
 
+class Job(object):
+    def __init__(self, tag, host, step, start_time=None):
+        import arrow
+        self.tag = tag
+        self.host = host
+        self.step = step
+        if not start_time:
+            self.start_time = arrow.utcnow()
+        else:
+            self.start_time = arrow.get(start_time)
+
+    def dict(self):
+        return {
+            'tag': self.tag,
+            'host': self.host,
+            'step': self.step,
+            'start_time': str(self.start_time)
+        }
+
+    def time_elapsed(self):
+        return self.start_time.humanize()
+
+
+class Host(object):
+    def __init__(self, host, remote_path):
+        self.host = host
+        self.remote_path = remote_path
+
+    def dict(self):
+        return self.__dict__
+
+
+class Alias(object):
+    def __init__(self, alias, host):
+        assert isinstance(host, Host)
+        self.alias = alias
+        self.host = host.host
+        self.remote_path = host.remote_path
+
+    def dict(self):
+        return {
+            'alias': self.alias,
+            'host': self.host
+        }
+
+
 def path_root():
     from os.path import dirname
     return dirname(dirname(__file__))
@@ -58,6 +104,12 @@ def init_ignore():
 
 
 def get_hosts():
+    '''
+    [
+        {host: ..., remote_path: ...}
+        {alias: ..., host: ...}
+    ]
+    '''
     from os.path import exists
 
     if not exists(path_file_hosts()):
@@ -65,8 +117,26 @@ def get_hosts():
 
     with open(path_file_hosts()) as handle:
         import yaml
-        hosts = yaml.load(handle)
-    return hosts
+        content = yaml.load(handle)
+
+    assert isinstance(content, list), 'hosts must be a list'
+
+    plain_hosts = filter(lambda x: 'alias' not in x, content)
+    plain_alias = filter(lambda x: 'alias' in x, content)
+
+    h_map = {}
+    all = []
+
+    for host in plain_hosts:
+        h = Host(host['host'], host['remote_path'])
+        h_map[h.host] = h
+        all.append(h)
+
+    for alias in plain_alias:
+        h = Alias(alias['alias'], h_map[alias['host']])
+        all.append(h)
+
+    return all
 
 
 def get_db():
@@ -82,9 +152,19 @@ def get_db():
 
 
 def save_hosts(hosts):
+    '''
+    [
+        {host: ..., remote_path: ...}
+        {alias: ..., host: ...}
+    ]
+    '''
     with open(path_file_hosts(), 'w') as handle:
         import yaml
-        yaml.safe_dump(hosts, handle)
+        raw = [
+            host.dict()
+            for host in hosts
+            ]
+        yaml.safe_dump(raw, handle)
 
 
 def save_db(db):
