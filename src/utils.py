@@ -222,4 +222,5 @@ def run_remote(host, path, command):
 
 def run_remote_check(host, path, command):
     code, out = run_remote(host, path, command)
-    assert code == 0, 'some err occured during the execution of cmd {}'.format(command)
+    assert code == 0, 'some err occured during the execution of cmd {} err code {}'.format(command, code)
+    return out

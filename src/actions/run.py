@@ -62,7 +62,8 @@ class NormalFlow(Flow):
             self.save()
 
     def sync_up(self):
-        pass
+        from .lib.rsync import rsync_up
+        rsync_up(self.job.host, self.job.remote_path)
 
     def build(self):
         from .lib.docker import docker_build
@@ -86,7 +87,8 @@ class NormalFlow(Flow):
         self.job.container = None
 
     def sync_down(self):
-        pass
+        from .lib.rsync import rsync_down
+        rsync_down(self.job.host, self.job.remote_path)
 
 
 def run_job(job, db, flow_cls):
