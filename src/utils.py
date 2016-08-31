@@ -12,6 +12,10 @@ class DB(object):
         self.jobs.append(job)
         self.save()
 
+    def remove_job(self, job):
+        self.jobs.remove(job)
+        self.save()
+
     def update_latest(self, host):
         self.latest_host = host
         self.save()
@@ -66,7 +70,7 @@ class DB(object):
 
 class Job(object):
     def __init__(self, tag, hosts, using_host,
-                 remote_path, command, step,
+                 remote_path, command, step, docker='docker',
                  start_time=None, container=None, oth=None):
         assert isinstance(hosts, list)
         import arrow
@@ -76,6 +80,7 @@ class Job(object):
         self.remote_path = remote_path
         self.command = command
         self.step = step
+        self.docker = docker
         if not start_time:
             self.start_time = arrow.utcnow()
         else:
@@ -96,6 +101,7 @@ class Job(object):
             'remote_path': self.remote_path,
             'command': self.command,
             'step': self.step,
+            'docker': self.docker,
             'start_time': str(self.start_time),
             'container': self.container,
             'oth': self.oth
@@ -110,6 +116,7 @@ class Job(object):
                    remote_path=d['remote_path'],
                    command=d['command'],
                    step=d['step'],
+                   docker=d['docker'],
                    start_time=d['start_time'],
                    container=d['container'],
                    oth=d['oth'])

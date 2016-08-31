@@ -11,9 +11,10 @@ class ParserTest(unittest.TestCase):
 
     def test_run_with_host_and_path(self):
         args = parseargs(
-            ['run', '--tag', 'sometag', '--host=some@host', '--path=/some/path', 'python', 'test.py', 'a', '--b=c'])
+            ['run', '--docker=nvidia-docker', '--tag', 'sometag', '--host=some@host', '--path=/some/path', 'python', 'test.py', 'a', '--b=c'])
         print(args)
         self.assertEqual(args.action, Actions.RUN)
+        self.assertEqual(args.docker, 'nvidia-docker')
         self.assertEqual(args.tag, 'sometag')
         self.assertEqual(args.host, 'some@host')
         self.assertEqual(args.path, '/some/path')

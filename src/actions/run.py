@@ -73,21 +73,25 @@ class NormalFlow(Flow):
         docker_build(self.job.using_host,
                      self.job.remote_path,
                      self.job.tag,
-                     '.')
+                     '.',
+                     docker=self.job.docker)
 
     def run(self):
         from .lib.docker import docker_run
         container = docker_run(self.job.using_host, self.job.remote_path, self.job.tag, '$(pwd)',
-                               self.job.command)
+                               self.job.command,
+                               docker=self.job.docker)
         self.job.container = container
 
     def log(self):
         from .lib.docker import docker_logs_check
-        return docker_logs_check(self.job.using_host, self.job.remote_path, self.job.container)
+        return docker_logs_check(self.job.using_host, self.job.remote_path, self.job.container,
+                                 docker=self.job.docker)
 
     def remove(self):
         from .lib.docker import docker_rm
-        docker_rm(self.job.using_host, self.job.remote_path, self.job.container)
+        docker_rm(self.job.using_host, self.job.remote_path, self.job.container,
+                  docker=self.job.docker)
         self.job.container = None
 
     def sync_down(self):

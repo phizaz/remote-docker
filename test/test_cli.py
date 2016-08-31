@@ -34,15 +34,123 @@ import src.utils
 import test.utils
 
 class CLITest(unittest.TestCase):
+
     def test_list(self):
         from os.path import join
         file = join(src.utils.path_src(), 'remotedocker.py')
-        output = test.utils.run_python(file, 'list')
-        print(output)
-        raise NotImplementedError
+        test.utils.run_python(file, 'list')
 
-    def test_run_without_conflict(self):
+    def test_run_existing(self):
+        import arrow
+        a = arrow.utcnow()
+        d = {
+            'latest_host': 'a',
+            'jobs': [
+                {
+                    'tag': 'test_run_existing',
+                    'hosts': ['ta@192.168.1.45'],
+                    'using_host': 'ta@192.168.1.45',
+                    'step': None,
+                    'docker': 'docker',
+                    'remote_path': '~/Projects/test-remotedocker/run_existing',
+                    'command': ['echo', 'test'],
+                    'start_time': str(a),
+                    'container': 'container',
+                    'oth': dict(a=10),
+                }
+            ]
+        }
+        from src import utils
+        db = utils.DB.parse(d)
+        db.save()
+
         from os.path import join
         file = join(src.utils.path_src(), 'remotedocker.py')
-        output = test.utils.run_python(file, 'run', '-t', 'test_tag', 'python', '')
+        output = test.utils.run_python(
+            file, 'run', '--tag=test_run_existing'
+        )
+
+        print('run output:', output)
+
+        from os import remove
+        remove(utils.path_file_db())
+
+    def test_run(self):
+        from src import utils
+
+        from os.path import join
+        file = join(src.utils.path_src(), 'remotedocker.py')
+        output = test.utils.run_python(
+            file, 'run',
+            '--tag=test_run_existing',
+            '--host=ta@192.168.1.45',
+            '--path=~/Projects/test-remotedocker/run_plain'
+            'echo', 'test'
+        )
+
+        print('run output:', output)
+
+        from os import remove
+        remove(utils.path_file_db())
+
+    def test_run_with_host(self):
+        import arrow
+        a = arrow.utcnow()
+        d = {
+            'latest_host': 'a',
+            'jobs': [
+                {
+                    'tag': 'test_run_existing',
+                    'hosts': ['ta@192.168.1.45'],
+                    'using_host': 'ta@192.168.1.45',
+                    'step': None,
+                    'docker': 'docker',
+                    'remote_path': '~/Projects/test-remotedocker/run_with_host',
+                    'command': ['echo', 'test'],
+                    'start_time': str(a),
+                    'container': 'container',
+                    'oth': dict(a=10),
+                }
+            ]
+        }
+        from src import utils
+        db = utils.DB.parse(d)
+        db.save()
+
+        from os.path import join
+        file = join(src.utils.path_src(), 'remotedocker.py')
+        output = test.utils.run_python(
+            file, 'run',
+            '--tag=test_run_existing',
+            '--host=ta@192.168.1.45',
+            'echo', 'test'
+        )
+
+        print('run output:', output)
+
+        from os import remove
+        remove(utils.path_file_db())
+
+    def test_restart(self):
+        raise NotImplementedError
+
+    def test_stop(self):
+        raise NotImplementedError
+
+    def test_remove(self):
+        raise NotImplementedError
+
+    def test_full(self):
+        from src import utils
+        from os.path import join
+        file = join(src.utils.path_src(), 'remotedocker.py')
+        output = test.utils.run_python(
+            file, 'run',
+            '--tag=test_run_existing',
+            '--host=ta@192.168.1.45',
+            'echo', 'test'
+        )
+        raise NotImplementedError
+
+
 

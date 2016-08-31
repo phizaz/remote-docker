@@ -4,6 +4,7 @@ def act_list(args):
     db = utils.DB.load()
     print_list(db)
 
+
 def act_run_old(args):
     from src import utils
     db = utils.DB.load()
@@ -13,7 +14,7 @@ def act_run_old(args):
         job.set_using_host(args.host)
 
     from .actions import run
-    run.run(job, db)
+    run.run(job, db, run.NormalFlow)
 
 
 def act_run_new(args):
@@ -42,11 +43,12 @@ def act_run_new(args):
                     using_host=args.host,
                     remote_path=args.path,
                     command=args.command,
-                    step=None)
+                    step=None,
+                    docker=args.docker)
     db.add_job(job)
 
     from .actions import run
-    run.run(job, db)
+    run.run(job, db, run.NormalFlow)
 
 
 def act_run(args):
@@ -54,6 +56,27 @@ def act_run(args):
         act_run_old(args)
     else:
         act_run_new(args)
+
+
+def act_restart(args):
+    from .actions import restart
+    from src import utils
+    db = utils.DB.load()
+    restart.restart(args.tag, db)
+
+
+def act_stop(args):
+    from .actions import stop
+    from src import utils
+    db = utils.DB.load()
+    stop.stop(args.tag, db)
+
+
+def act_remove(args):
+    from .actions import remove
+    from src import utils
+    db = utils.DB.load()
+    remove.remove(args.tag, db)
 
 
 def main():
@@ -64,7 +87,10 @@ def main():
 
     func_map = {
         Actions.LIST: act_list,
-        Actions.RUN: act_run
+        Actions.RUN: act_run,
+        Actions.RESTART: act_restart,
+        Actions.STOP: act_stop,
+        Actions.REMOVE: act_remove,
     }
 
     # call function

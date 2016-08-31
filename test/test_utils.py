@@ -14,6 +14,7 @@ class UtilsTest(unittest.TestCase):
                     'hosts': ['host1', 'host2'],
                     'using_host': 'host1',
                     'step': 'step',
+                    'docker': 'docker',
                     'remote_path': 'remote_path',
                     'command': 'command',
                     'start_time': str(a),
@@ -38,6 +39,7 @@ class UtilsTest(unittest.TestCase):
                     'hosts': ['host1', 'host2'],
                     'using_host': 'host1',
                     'step': 'step',
+                    'docker': 'docker',
                     'remote_path': 'remote_path',
                     'command': 'command',
                     'start_time': str(a),
@@ -61,6 +63,7 @@ class UtilsTest(unittest.TestCase):
             'hosts': ['host1', 'host2'],
             'using_host': 'host1',
             'step': 'step',
+            'docker': 'docker',
             'remote_path': 'remote_path',
             'command': 'command',
             'start_time': str(a),
@@ -72,6 +75,7 @@ class UtilsTest(unittest.TestCase):
         self.assertListEqual(job.hosts, ['host1', 'host2'])
         self.assertEqual(job.using_host, 'host1')
         self.assertEqual(job.step, 'step')
+        self.assertEqual(job.docker, 'docker')
         self.assertEqual(job.remote_path, 'remote_path')
         self.assertEqual(job.command, 'command')
         self.assertEqual(str(job.start_time), str(a))
@@ -86,6 +90,7 @@ class UtilsTest(unittest.TestCase):
             'hosts': ['host1', 'host2'],
             'using_host': 'host1',
             'step': 'step',
+            'docker': 'nvidia-docker',
             'remote_path': 'remote_path',
             'command': 'command',
             'start_time': str(a),

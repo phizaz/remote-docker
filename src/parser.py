@@ -23,6 +23,7 @@ def parseargs(argv):
     parse_run.add_argument('--tag', required=True, help='tag')
     parse_run.add_argument('--host', help='host')
     parse_run.add_argument('--path', help='remote path')
+    parse_run.add_argument('--docker', default='docker', help='docker executable, you can provide this value to be something like `nvidia-docker`')
     parse_run.set_defaults(action=Actions.RUN)
 
     parse_restart = subparse.add_parser('restart')
