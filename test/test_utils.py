@@ -130,6 +130,9 @@ class UtilsTest(unittest.TestCase):
         for j, _j in zip(db, _db):
             self.assertDictEqual(j.dict(), _j.dict())
 
+        from os import remove
+        remove(utils.path_file_db())
+
     def test_run_local(self):
         code, out = utils.run_local(['echo', 'test'])
         print(code)
