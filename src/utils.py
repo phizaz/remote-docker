@@ -42,13 +42,19 @@ def path_file_ignore():
 def init_hosts():
     from shutil import copy
     from os.path import join
-    copy(join(path_src(), Files.HOSTS), path_file_hosts())
+    copy(join(path_src(), 'static', Files.HOSTS), path_file_hosts())
 
 
 def init_db():
     from shutil import copy
     from os.path import join
-    copy(join(path_src(), Files.DB), path_file_db())
+    copy(join(path_src(), 'static', Files.DB), path_file_db())
+
+
+def init_ignore():
+    from shutil import copy
+    from os.path import join
+    copy(join(path_src(), 'static', Files.IGNORE), path_file_ignore())
 
 
 def get_hosts():
