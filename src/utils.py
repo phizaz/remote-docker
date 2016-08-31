@@ -5,7 +5,7 @@ class Files(object):
 
 
 class Job(object):
-    def __init__(self, tag, host, step, start_time=None):
+    def __init__(self, tag, host, step, start_time=None, container=None):
         import arrow
         self.tag = tag
         self.host = host
@@ -14,13 +14,15 @@ class Job(object):
             self.start_time = arrow.utcnow()
         else:
             self.start_time = arrow.get(start_time)
+        self.container = container
 
     def dict(self):
         return {
             'tag': self.tag,
             'host': self.host,
             'step': self.step,
-            'start_time': str(self.start_time)
+            'start_time': str(self.start_time),
+            'container': self.container,
         }
 
     def time_elapsed(self):
@@ -147,7 +149,12 @@ def get_db():
 
     with open(path_file_db()) as handle:
         import yaml
-        db = yaml.load(handle)
+        rows = yaml.load(handle)
+
+    db = []
+    for row in rows:
+        db.append(Job(row['tag'], row['host'], row['step'], row['start_time'], row['container']))
+
     return db
 
 
@@ -170,7 +177,11 @@ def save_hosts(hosts):
 def save_db(db):
     with open(path_file_db(), 'w') as handle:
         import yaml
-        yaml.safe_dump(db, handle)
+        raw = [
+            each.dict()
+            for each in db
+        ]
+        yaml.safe_dump(raw, handle)
 
 
 def run_local(command, shell=False):

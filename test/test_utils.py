@@ -6,13 +6,14 @@ class UtilsTest(unittest.TestCase):
     def test_Job(self):
         import arrow
         a = arrow.utcnow()
-        j = utils.Job('tag', 'host', 'step', a)
+        j = utils.Job('tag', 'host', 'step', a, 'container')
         print(j.dict())
         self.assertDictEqual(j.dict(), {
             'tag': 'tag',
             'host': 'host',
             'step': 'step',
-            'start_time': str(a)
+            'start_time': str(a),
+            'container': 'container',
         })
 
         j = utils.Job('tag', 'host', 'step')
@@ -65,8 +66,8 @@ class UtilsTest(unittest.TestCase):
         with open(utils.Files.HOSTS, 'w') as handle:
             import yaml
             yaml.safe_dump([
-                { 'host': 'a@a', 'remote_path': '/path/a'},
-                { 'alias': 'b@b', 'host': 'a@a'}
+                {'host': 'a@a', 'remote_path': '/path/a'},
+                {'alias': 'b@b', 'host': 'a@a'}
             ], handle)
 
         from os import remove
@@ -78,6 +79,25 @@ class UtilsTest(unittest.TestCase):
         self.assertEqual(hosts[1].remote_path, '/path/a')
         print(hosts)
         remove(utils.Files.HOSTS)
+
+    def test_get_db(self):
+        with open(utils.Files.DB, 'w') as handle:
+            import yaml
+            yaml.safe_dump([
+                {'tag': 'a', 'host': 'b', 'step': 'c', 'start_time': '2016-08-31T07:28:52.987114+00:00', 'container': 'container'}
+            ], handle)
+
+        from os import remove
+        db = utils.get_db()
+        print(db)
+        self.assertEqual(db[0].tag, 'a')
+        self.assertEqual(db[0].host, 'b')
+        self.assertEqual(db[0].step, 'c')
+        self.assertEqual(db[0].container, 'container')
+        import arrow
+        self.assertIsInstance(db[0].start_time, arrow.Arrow)
+        self.assertEqual(str(db[0].start_time), '2016-08-31T07:28:52.987114+00:00')
+        remove(utils.Files.DB)
 
     def test_save_hosts(self):
         host = utils.Host('a@a', '/path/a')
@@ -97,6 +117,18 @@ class UtilsTest(unittest.TestCase):
         from os import remove
         remove(utils.path_file_hosts())
 
+    def test_save_db(self):
+        db = [
+            utils.Job(tag='a', host='b', step='c', container='aoeu'),
+            utils.Job(tag='d', host='e', step='f', start_time='2016-08-31T07:28:52.987114+00:00')
+        ]
+
+        utils.save_db(db)
+
+        _db = utils.get_db()
+        self.assertEqual(len(db), len(_db))
+        for j, _j in zip(db, _db):
+            self.assertDictEqual(j.dict(), _j.dict())
 
     def test_run_local(self):
         code, out = utils.run_local(['echo', 'test'])
