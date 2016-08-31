@@ -94,7 +94,8 @@ class UtilsTest(unittest.TestCase):
             {'host': 'a@a', 'remote_path': '/path/a'},
             {'alias': 'b@b', 'host': 'a@a'}
         ])
-
+        from os import remove
+        remove(utils.path_file_hosts())
 
 
     def test_run_local(self):

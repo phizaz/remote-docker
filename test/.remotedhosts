@@ -1,2 +1,0 @@
-- {host: a@a, remote_path: /path/a}
-- {alias: b@b, host: a@a}
