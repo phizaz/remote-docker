@@ -5,7 +5,7 @@ class Files(object):
 
 
 class Job(object):
-    def __init__(self, tag, host, remote_path, command, step, start_time=None, container=None):
+    def __init__(self, tag, host, remote_path, command, step, start_time=None, container=None, oth=None):
         import arrow
         self.tag = tag
         self.host = host
@@ -17,6 +17,7 @@ class Job(object):
         else:
             self.start_time = arrow.get(start_time)
         self.container = container
+        self.oth = oth
 
     def dict(self):
         return {
@@ -27,6 +28,7 @@ class Job(object):
             'step': self.step,
             'start_time': str(self.start_time),
             'container': self.container,
+            'oth': self.oth
         }
 
     def time_elapsed(self):
@@ -157,7 +159,7 @@ def get_db():
 
     db = []
     for row in rows:
-        db.append(Job(row['tag'], row['host'], row['remote_path'], row['command'], row['step'], row['start_time'], row['container']))
+        db.append(Job(row['tag'], row['host'], row['remote_path'], row['command'], row['step'], row['start_time'], row['container'], row['oth']))
 
     return db
 

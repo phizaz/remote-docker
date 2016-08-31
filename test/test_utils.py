@@ -6,7 +6,7 @@ class UtilsTest(unittest.TestCase):
     def test_Job(self):
         import arrow
         a = arrow.utcnow()
-        j = utils.Job('tag', 'host', 'remote_path', 'command', 'step', a, 'container')
+        j = utils.Job('tag', 'host', 'remote_path', 'command', 'step', a, 'container', oth=dict(a=10))
         print(j.dict())
         self.assertDictEqual(j.dict(), {
             'tag': 'tag',
@@ -16,6 +16,7 @@ class UtilsTest(unittest.TestCase):
             'command': 'command',
             'start_time': str(a),
             'container': 'container',
+            'oth': dict(a=10),
         })
 
         j = utils.Job('tag', 'host', 'remote_path', 'command', 'step')
@@ -87,7 +88,7 @@ class UtilsTest(unittest.TestCase):
             import yaml
             yaml.safe_dump([
                 {'tag': 'a', 'host': 'b', 'remote_path': 'remote_path', 'step': 'c', 'command': 'command',
-                 'start_time': '2016-08-31T07:28:52.987114+00:00', 'container': 'container'}
+                 'start_time': '2016-08-31T07:28:52.987114+00:00', 'container': 'container', 'oth': dict(a=10)}
             ], handle)
 
         from os import remove
@@ -99,6 +100,7 @@ class UtilsTest(unittest.TestCase):
         self.assertEqual(db[0].step, 'c')
         self.assertEqual(db[0].command, 'command')
         self.assertEqual(db[0].container, 'container')
+        self.assertDictEqual(db[0].oth, dict(a=10))
         import arrow
         self.assertIsInstance(db[0].start_time, arrow.Arrow)
         self.assertEqual(str(db[0].start_time), '2016-08-31T07:28:52.987114+00:00')
@@ -124,7 +126,7 @@ class UtilsTest(unittest.TestCase):
 
     def test_save_db(self):
         db = [
-            utils.Job(tag='a', host='b', remote_path='remote_path', step='c', command='x', container='aoeu'),
+            utils.Job(tag='a', host='b', remote_path='remote_path', step='c', command='x', container='aoeu', oth=dict(a=10)),
             utils.Job(tag='d', host='e', remote_path='remote_path', step='f', command='y', start_time='2016-08-31T07:28:52.987114+00:00')
         ]
 
