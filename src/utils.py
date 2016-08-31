@@ -39,6 +39,44 @@ def path_file_ignore():
     return join(path_caller(), Files.IGNORE)
 
 
+def init_hosts():
+    from shutil import copy
+    from os.path import join
+    copy(join(path_src(), Files.HOSTS), path_file_hosts())
+
+
+def init_db():
+    from shutil import copy
+    from os.path import join
+    copy(join(path_src(), Files.DB), path_file_db())
+
+
+def get_hosts():
+    with open(path_file_hosts()) as handle:
+        import yaml
+        hosts = yaml.load(handle)
+    return hosts
+
+
+def get_db():
+    with open(path_file_db()) as handle:
+        import yaml
+        db = yaml.load(handle)
+    return db
+
+
+def save_hosts(hosts):
+    with open(path_file_hosts(), 'w') as handle:
+        import yaml
+        yaml.safe_dump(hosts, handle)
+
+
+def save_db(db):
+    with open(path_file_db(), 'w') as handle:
+        import yaml
+        yaml.safe_dump(db, handle)
+
+
 def run_local(command, shell=False):
     import subprocess
     import sys

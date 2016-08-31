@@ -79,5 +79,6 @@ def docker_rm(host, remote_path, container, docker='docker'):
     return container
 
 
-def run(tag, host, path, command):
+def run(tag, host, remote_path, command):
+
     pass
