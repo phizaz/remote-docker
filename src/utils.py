@@ -1,14 +1,78 @@
 class Files(object):
-    HOSTS = '.remotedhosts'
     DB = '.remoteddb'
     IGNORE = '.remotedignore'
 
 
+class DB(object):
+    def __init__(self, latest_host, jobs):
+        self.latest_host = latest_host
+        self.jobs = jobs
+
+    def add_job(self, job):
+        self.jobs.append(job)
+        self.save()
+
+    def update_latest(self, host):
+        self.latest_host = host
+        self.save()
+
+    def get_job_by_tag(self, tag):
+        for job in self.jobs:
+            if job.tag == tag:
+                return job
+        raise ValueError('job with tag {} not found in the DB'.format(tag))
+
+    def get_path_by_host(self, host):
+        for job in self.jobs:
+            if host in job.hosts:
+                return job.remote_path
+        raise ValueError('job with host {} not found in the DB'.format(host))
+
+    def dict(self):
+        return {
+            'latest_host': self.latest_host,
+            'jobs': [
+                job.dict()
+                for job in self.jobs
+                ]
+        }
+
+    @classmethod
+    def parse(cls, d):
+        return DB(latest_host=d['latest_host'],
+                  jobs=[
+                      Job.parse(each)
+                      for each in d['jobs']
+                      ])
+
+    @classmethod
+    def load(cls):
+        from os.path import exists
+        if not exists(path_file_db()):
+            db = DB(None, [])
+            db.save()
+            return db
+        else:
+            with open(path_file_db()) as handle:
+                import yaml
+                content = yaml.load(handle)
+            return cls.parse(content)
+
+    def save(self):
+        with open(path_file_db(), 'w') as handle:
+            import yaml
+            yaml.safe_dump(self.dict(), handle)
+
+
 class Job(object):
-    def __init__(self, tag, host, remote_path, command, step, start_time=None, container=None, oth=None):
+    def __init__(self, tag, hosts, using_host,
+                 remote_path, command, step,
+                 start_time=None, container=None, oth=None):
+        assert isinstance(hosts, list)
         import arrow
         self.tag = tag
-        self.host = host
+        self.hosts = hosts
+        self.using_host = using_host
         self.remote_path = remote_path
         self.command = command
         self.step = step
@@ -19,10 +83,16 @@ class Job(object):
         self.container = container
         self.oth = oth
 
+    def set_using_host(self, host):
+        if host not in self.hosts:
+            self.hosts.append(host)
+        self.using_host = host
+
     def dict(self):
         return {
             'tag': self.tag,
-            'host': self.host,
+            'hosts': self.hosts,
+            'using_host': self.using_host,
             'remote_path': self.remote_path,
             'command': self.command,
             'step': self.step,
@@ -31,31 +101,21 @@ class Job(object):
             'oth': self.oth
         }
 
+    @classmethod
+    def parse(cls, d):
+        assert isinstance(d, dict)
+        return Job(tag=d['tag'],
+                   hosts=d['hosts'],
+                   using_host=d['using_host'],
+                   remote_path=d['remote_path'],
+                   command=d['command'],
+                   step=d['step'],
+                   start_time=d['start_time'],
+                   container=d['container'],
+                   oth=d['oth'])
+
     def time_elapsed(self):
         return self.start_time.humanize()
-
-
-class Host(object):
-    def __init__(self, host, remote_path):
-        self.host = host
-        self.remote_path = remote_path
-
-    def dict(self):
-        return self.__dict__
-
-
-class Alias(object):
-    def __init__(self, alias, host):
-        assert isinstance(host, Host)
-        self.alias = alias
-        self.host = host.host
-        self.remote_path = host.remote_path
-
-    def dict(self):
-        return {
-            'alias': self.alias,
-            'host': self.host
-        }
 
 
 def path_root():
@@ -78,11 +138,6 @@ def path_test():
     return join(path_root(), 'test')
 
 
-def path_file_hosts():
-    from os.path import join
-    return join(path_caller(), Files.HOSTS)
-
-
 def path_file_db():
     from os.path import join
     return join(path_caller(), Files.DB)
@@ -91,12 +146,6 @@ def path_file_db():
 def path_file_ignore():
     from os.path import join
     return join(path_caller(), Files.IGNORE)
-
-
-def init_hosts():
-    from shutil import copy
-    from os.path import join
-    copy(join(path_src(), 'static', Files.HOSTS), path_file_hosts())
 
 
 def init_db():
@@ -111,83 +160,21 @@ def init_ignore():
     copy(join(path_src(), 'static', Files.IGNORE), path_file_ignore())
 
 
-def get_hosts():
-    '''
-    [
-        {host: ..., remote_path: ...}
-        {alias: ..., host: ...}
-    ]
-    '''
-    from os.path import exists
-
-    if not exists(path_file_hosts()):
-        init_hosts()
-
-    with open(path_file_hosts()) as handle:
-        import yaml
-        content = yaml.load(handle)
-
-    assert isinstance(content, list), 'hosts must be a list'
-
-    plain_hosts = filter(lambda x: 'alias' not in x, content)
-    plain_alias = filter(lambda x: 'alias' in x, content)
-
-    h_map = {}
-    all = []
-
-    for host in plain_hosts:
-        h = Host(host['host'], host['remote_path'])
-        h_map[h.host] = h
-        all.append(h)
-
-    for alias in plain_alias:
-        h = Alias(alias['alias'], h_map[alias['host']])
-        all.append(h)
-
-    return all
+def find_job_tag(tag, db):
+    jobs = []
+    for each in db:
+        assert isinstance(each, Job)
+        if each.tag == tag:
+            jobs.append(each)
+    return jobs
 
 
-def get_db():
-    from os.path import exists
-
-    if not exists(path_file_db()):
-        init_db()
-
-    with open(path_file_db()) as handle:
-        import yaml
-        rows = yaml.load(handle)
-
-    db = []
-    for row in rows:
-        db.append(Job(row['tag'], row['host'], row['remote_path'], row['command'], row['step'], row['start_time'], row['container'], row['oth']))
-
-    return db
-
-
-def save_hosts(hosts):
-    '''
-    [
-        {host: ..., remote_path: ...}
-        {alias: ..., host: ...}
-    ]
-    '''
-    with open(path_file_hosts(), 'w') as handle:
-        import yaml
-        raw = [
-            host.dict()
-            for host in hosts
-            ]
-        yaml.safe_dump(raw, handle)
-
-
-def save_db(db):
-    with open(path_file_db(), 'w') as handle:
-        import yaml
-        raw = [
-            each.dict()
-            for each in db
-        ]
-        yaml.safe_dump(raw, handle)
+def find_job(tag, host, db):
+    for each in db:
+        assert isinstance(each, Job)
+        if each.tag == tag and each.host == host:
+            return each
+    raise ValueError('job tag: {} host: {} not found in db file'.format(tag, host))
 
 
 def run_local(command, shell=False):

@@ -13,15 +13,14 @@ class Flow(object):
     from abc import abstractmethod
 
     def __init__(self, job, db):
-        from src.utils import Job
+        from src.utils import Job, DB
         assert isinstance(job, Job)
-        assert job in db
+        assert isinstance(db, DB)
         self.job = job
-        self._db = db
+        self.db = db
 
     def save(self):
-        from src.utils import save_db
-        save_db(self._db)
+        self.db.save()
 
     @abstractmethod
     def start(self):
@@ -63,47 +62,36 @@ class NormalFlow(Flow):
 
     def sync_up(self):
         from .lib.rsync import rsync_up
-        rsync_up(self.job.host, self.job.remote_path)
+        rsync_up(self.job.using_host, self.job.remote_path)
 
     def build(self):
         from .lib.docker import docker_build
-        docker_build(self.job.host,
+        docker_build(self.job.using_host,
                      self.job.remote_path,
                      self.job.tag,
                      '.')
 
     def run(self):
         from .lib.docker import docker_run
-        container = docker_run(self.job.host, self.job.remote_path, self.job.tag, self.job.remote_path, self.job.command)
+        container = docker_run(self.job.using_host, self.job.remote_path, self.job.tag, self.job.remote_path,
+                               self.job.command)
         self.job.container = container
 
     def log(self):
         from .lib.docker import docker_logs_check
-        docker_logs_check(self.job.host, self.job.remote_path, self.job.container)
+        docker_logs_check(self.job.using_host, self.job.remote_path, self.job.container)
 
     def remove(self):
         from .lib.docker import docker_rm
-        docker_rm(self.job.host, self.job.remote_path, self.job.container)
+        docker_rm(self.job.using_host, self.job.remote_path, self.job.container)
         self.job.container = None
 
     def sync_down(self):
         from .lib.rsync import rsync_down
-        rsync_down(self.job.host, self.job.remote_path)
+        rsync_down(self.job.using_host, self.job.remote_path)
 
 
-def run_job(job, db, flow_cls):
+def run(job, db, flow_cls=NormalFlow):
+    assert issubclass(flow_cls, Flow), 'flow_cls must be inherited from Flow'
     flow = flow_cls(job=job, db=db)
     flow.start()
-
-
-def run(tag, db, flow_cls):
-    assert issubclass(flow_cls, Flow), 'flow_cls must be inherited from Flow'
-    assert isinstance(db, list)
-    job = None
-
-    for each in db:
-        if each.tag == tag:
-            job = each
-            break
-
-    run_job(job, db, flow_cls)

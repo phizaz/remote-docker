@@ -8,18 +8,19 @@ class RunTest(unittest.TestCase):
 
         utils.init_ignore()
 
-        db = [
-            utils.Job('test_normal_flow',
-                      'ta@desktop.dyn.konpat.me',
-                      '~/test_remote_desktop_normal_flow',
-                      ['echo', 'test'],
-                      None)
-        ]
+        db = utils.DB(None, [
+            utils.Job(tag='test_normal_flow',
+                      hosts=['ta@192.168.1.45', 'ta@desktop.dyn.konpat.me'],
+                      using_host='ta@192.168.1.45',
+                      remote_path='~/test_remote_desktop_normal_flow',
+                      command=['echo', 'test'],
+                      step=None)
+        ])
 
-        run.run_job(db[0], db, run.NormalFlow)
+        run.run(db.jobs[0], db, run.NormalFlow)
 
-        _db = utils.get_db()
-        print(_db[0].dict())
+        _db = utils.DB.load()
+        print(_db.dict())
 
         from os import remove
         remove(utils.path_file_ignore())
@@ -29,15 +30,16 @@ class RunTest(unittest.TestCase):
 
         utils.init_ignore()
 
-        db = [
-            utils.Job('test_normal_flow',
-                      'ta@desktop.dyn.konpat.me',
-                      '~/test_remote_desktop_normal_flow',
-                      ['aoeu'],
-                      None)
-        ]
+        db = utils.DB(None, [
+            utils.Job(tag='test_normal_flow',
+                      hosts=['ta@192.168.1.45', 'ta@desktop.dyn.konpat.me'],
+                      using_host='ta@192.168.1.45',
+                      remote_path='~/test_remote_desktop_normal_flow',
+                      command=['aoeu'],
+                      step=None)
+        ])
 
-        self.assertRaises(Exception, run.run_job, db[0], db, run.NormalFlow)
+        self.assertRaises(Exception, run.run, db.jobs[0], db, run.NormalFlow)
 
         from os import remove
         remove(utils.path_file_ignore())

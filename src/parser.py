@@ -1,8 +1,5 @@
 class Actions(object):
     LIST = 'LIST'
-    DEFAULT = 'DEFAULT'
-    NEW_HOST = 'NEW_HOST'
-    NEW_ALIAS = 'NEW_ALIAS'
     RUN = 'RUN'
 
 def parseargs(argv):
@@ -17,23 +14,6 @@ def parseargs(argv):
 
     parse_list = subparse.add_parser('list')
     parse_list.set_defaults(action=Actions.LIST)
-
-    parse_default = subparse.add_parser('default')
-    parse_default.add_argument('host')
-    parse_default.set_defaults(action=Actions.DEFAULT)
-
-    parse_new = subparse.add_parser('new')
-    parse_new_sub = parse_new.add_subparsers()
-
-    parse_new_host = parse_new_sub.add_parser('host')
-    parse_new_host.add_argument('host')
-    parse_new_host.add_argument('path', nargs='?', help='remote path')
-    parse_new_host.set_defaults(action=Actions.NEW_HOST)
-
-    parse_new_alias = parse_new_sub.add_parser('alias')
-    parse_new_alias.add_argument('alias')
-    parse_new_alias.add_argument('host')
-    parse_new_alias.set_defaults(action=Actions.NEW_ALIAS)
 
     parse_run = subparse.add_parser('run')
     parse_run.add_argument('command', nargs=argparse.REMAINDER)

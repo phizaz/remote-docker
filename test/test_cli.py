@@ -8,14 +8,14 @@ $ tag           host        step                time elapsed
 $ firstrun      ta@home     sync to remote      5 minute
 $ secondrun     test@remote building            3 seconds
 
-remotedocker default some@host << set default host to this (project specific)
-remotedocker new host some@host /remote/path
-remotedocker new alias some@host old@host
-
 remotedocker run [options] [cmd [args...]]
 remotedocker run -t tagname python test.py [args...] << using the latest host
 remotedocker run -t tagname -h old@host python test.py [args...] << using a given host
 remotedocker run -t tagname -h new@host -p /remote/path python test.py [args...] << using a given (new) host
+
+remotedocker run -t tag -h alias@host ...
+remotedocker run -t tag -h some@host ... << point to the same thing
+
 
 # conflict
 remotedocker run -t tagname xxxxxxx
