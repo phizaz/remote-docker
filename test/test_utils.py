@@ -6,18 +6,19 @@ class UtilsTest(unittest.TestCase):
     def test_Job(self):
         import arrow
         a = arrow.utcnow()
-        j = utils.Job('tag', 'host', 'step', 'command', a, 'container')
+        j = utils.Job('tag', 'host', 'remote_path', 'command', 'step', a, 'container')
         print(j.dict())
         self.assertDictEqual(j.dict(), {
             'tag': 'tag',
             'host': 'host',
             'step': 'step',
+            'remote_path': 'remote_path',
             'command': 'command',
             'start_time': str(a),
             'container': 'container',
         })
 
-        j = utils.Job('tag', 'host', 'step', 'command')
+        j = utils.Job('tag', 'host', 'remote_path', 'command', 'step')
         aa = arrow.get(j.start_time)
         print(aa)
 
@@ -85,7 +86,8 @@ class UtilsTest(unittest.TestCase):
         with open(utils.Files.DB, 'w') as handle:
             import yaml
             yaml.safe_dump([
-                {'tag': 'a', 'host': 'b', 'step': 'c', 'command': 'command', 'start_time': '2016-08-31T07:28:52.987114+00:00', 'container': 'container'}
+                {'tag': 'a', 'host': 'b', 'remote_path': 'remote_path', 'step': 'c', 'command': 'command',
+                 'start_time': '2016-08-31T07:28:52.987114+00:00', 'container': 'container'}
             ], handle)
 
         from os import remove
@@ -93,6 +95,7 @@ class UtilsTest(unittest.TestCase):
         print(db)
         self.assertEqual(db[0].tag, 'a')
         self.assertEqual(db[0].host, 'b')
+        self.assertEqual(db[0].remote_path, 'remote_path')
         self.assertEqual(db[0].step, 'c')
         self.assertEqual(db[0].command, 'command')
         self.assertEqual(db[0].container, 'container')
@@ -121,8 +124,8 @@ class UtilsTest(unittest.TestCase):
 
     def test_save_db(self):
         db = [
-            utils.Job(tag='a', host='b', step='c', command='x', container='aoeu'),
-            utils.Job(tag='d', host='e', step='f', command='y', start_time='2016-08-31T07:28:52.987114+00:00')
+            utils.Job(tag='a', host='b', remote_path='remote_path', step='c', command='x', container='aoeu'),
+            utils.Job(tag='d', host='e', remote_path='remote_path', step='f', command='y', start_time='2016-08-31T07:28:52.987114+00:00')
         ]
 
         utils.save_db(db)

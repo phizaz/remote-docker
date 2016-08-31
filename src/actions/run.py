@@ -65,23 +65,34 @@ class NormalFlow(Flow):
         pass
 
     def build(self):
-        pass
+        from .lib.docker import docker_build
+        docker_build(self.job.host,
+                     self.job.remote_path,
+                     self.job.tag,
+                     '.')
 
     def run(self):
-        pass
+        from .lib.docker import docker_run
+        container = docker_run(self.job.host, self.job.remote_path, self.job.tag, self.job.remote_path, self.job.command)
+        self.job.container = container
 
     def log(self):
-        pass
+        from .lib.docker import docker_logs_check
+        docker_logs_check(self.job.host, self.job.remote_path, self.job.container)
 
     def remove(self):
-        pass
+        from .lib.docker import docker_rm
+        docker_rm(self.job.host, self.job.remote_path, self.job.container)
+        self.job.container = None
 
     def sync_down(self):
         pass
 
+
 def run_job(job, db, flow_cls):
     flow = flow_cls(job=job, db=db)
     flow.start()
+
 
 def run(tag, db, flow_cls):
     assert issubclass(flow_cls, Flow), 'flow_cls must be inherited from Flow'
@@ -94,4 +105,3 @@ def run(tag, db, flow_cls):
             break
 
     run_job(job, db, flow_cls)
-
