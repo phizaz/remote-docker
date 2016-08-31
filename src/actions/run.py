@@ -12,13 +12,16 @@ class Steps(object):
 class Flow(object):
     from abc import abstractmethod
 
-    def __init__(self, host, remote_path, command, job):
+    def __init__(self, job, db):
         from src.utils import Job
         assert isinstance(job, Job)
-        self.host = host
-        self.remote_path = remote_path
-        self.command = command
+        assert job in db
         self.job = job
+        self._db = db
+
+    def save(self):
+        from src.utils import save_db
+        save_db(self._db)
 
     @abstractmethod
     def start(self):
@@ -28,24 +31,35 @@ class Flow(object):
 class NormalFlow(Flow):
     def start(self):
         if self.job.step == Steps.SYNC_UP or not self.job.step:
-            self.job.step = Steps.SYNC_UP
+            print('(1/6)')
             self.sync_up()
             self.job.step = Steps.BUILD
+            self.save()
         if self.job.step == Steps.BUILD:
+            print('(2/6)')
             self.build()
             self.job.step = Steps.RUN
+            self.save()
         if self.job.step == Steps.RUN:
+            print('3/6')
             self.run()
             self.job.step = Steps.LOG
+            self.save()
         if self.job.step == Steps.LOG:
+            print('4/6')
             self.log()
             self.job.step = Steps.REMOVE
+            self.save()
         if self.job.step == Steps.REMOVE:
+            print('5/6')
             self.remove()
             self.job.step = Steps.SYNC_DOWN
+            self.save()
         if self.job.step == Steps.SYNC_DOWN:
+            print('6/6')
             self.sync_down()
             self.job.step = None
+            self.save()
 
     def sync_up(self):
         pass
@@ -66,5 +80,8 @@ class NormalFlow(Flow):
         pass
 
 
-def run(tag, host, remote_path, command):
-    pass
+def run(job, db, flow_cls):
+    assert issubclass(flow_cls, Flow), 'flow_cls must be inherited from Flow'
+    flow = flow_cls(job=job, db=db)
+    flow.start()
+

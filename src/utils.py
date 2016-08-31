@@ -5,11 +5,12 @@ class Files(object):
 
 
 class Job(object):
-    def __init__(self, tag, host, step, start_time=None, container=None):
+    def __init__(self, tag, host, step, command, start_time=None, container=None):
         import arrow
         self.tag = tag
         self.host = host
         self.step = step
+        self.command = command
         if not start_time:
             self.start_time = arrow.utcnow()
         else:
@@ -21,6 +22,7 @@ class Job(object):
             'tag': self.tag,
             'host': self.host,
             'step': self.step,
+            'command': self.command,
             'start_time': str(self.start_time),
             'container': self.container,
         }
@@ -153,7 +155,7 @@ def get_db():
 
     db = []
     for row in rows:
-        db.append(Job(row['tag'], row['host'], row['step'], row['start_time'], row['container']))
+        db.append(Job(row['tag'], row['host'], row['step'], row['command'], row['start_time'], row['container']))
 
     return db
 
