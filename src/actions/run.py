@@ -73,7 +73,7 @@ class NormalFlow(Flow):
 
     def run(self):
         from .lib.docker import docker_run
-        container = docker_run(self.job.using_host, self.job.remote_path, self.job.tag, self.job.remote_path,
+        container = docker_run(self.job.using_host, '$(pwd)', self.job.tag, self.job.remote_path,
                                self.job.command)
         self.job.container = container
 

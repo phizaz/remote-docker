@@ -1,6 +1,8 @@
 def act_list(args):
-    pass
-
+    from src.actions.list import print_list
+    from src import utils
+    db = utils.DB.load()
+    print_list(db)
 
 def act_run_old(args):
     from src import utils
