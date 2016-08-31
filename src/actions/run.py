@@ -32,32 +32,32 @@ class NormalFlow(Flow):
         log = None
 
         if self.job.step == Steps.SYNC_UP or not self.job.step:
-            print('(1/6)')
+            print('(1/6) Syncing files to the remote {}'.format(self.job.using_host))
             self.sync_up()
             self.job.step = Steps.BUILD
             self.save()
         if self.job.step == Steps.BUILD:
-            print('(2/6)')
+            print('(2/6) Building the environment')
             self.build()
             self.job.step = Steps.RUN
             self.save()
         if self.job.step == Steps.RUN:
-            print('3/6')
+            print('(3/6) Start running the process')
             self.run()
             self.job.step = Steps.LOG
             self.save()
         if self.job.step == Steps.LOG:
-            print('4/6')
+            print('(4/6) Fetching logs')
             log = self.log()
             self.job.step = Steps.REMOVE
             self.save()
         if self.job.step == Steps.REMOVE:
-            print('5/6')
+            print('(5/6) Removing the container')
             self.remove()
             self.job.step = Steps.SYNC_DOWN
             self.save()
         if self.job.step == Steps.SYNC_DOWN:
-            print('6/6')
+            print('(6/6) Syncing files back to the host (preserving newer files)')
             self.sync_down()
             self.job.step = None
             self.save()

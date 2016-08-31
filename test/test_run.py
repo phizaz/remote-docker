@@ -18,7 +18,7 @@ class RunTest(unittest.TestCase):
         ])
 
         log = run.run(db.jobs[0], db, run.NormalFlow)
-        print(log)
+        print('run output:', log)
         self.assertEqual(log, 'print(\'hello world!\')\n')
 
         _db = utils.DB.load()
