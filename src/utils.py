@@ -160,28 +160,11 @@ def init_ignore():
     copy(join(path_src(), 'static', Files.IGNORE), path_file_ignore())
 
 
-def find_job_tag(tag, db):
-    jobs = []
-    for each in db:
-        assert isinstance(each, Job)
-        if each.tag == tag:
-            jobs.append(each)
-    return jobs
-
-
-def find_job(tag, host, db):
-    for each in db:
-        assert isinstance(each, Job)
-        if each.tag == tag and each.host == host:
-            return each
-    raise ValueError('job tag: {} host: {} not found in db file'.format(tag, host))
-
-
-def run_local(command, shell=False):
+def run_local(command):
     import subprocess
     import sys
 
-    p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=sys.stdout, shell=shell)
+    p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=sys.stdout)
 
     output = ''
     for line in iter(p.stdout.readline, ''):
@@ -195,8 +178,8 @@ def run_local(command, shell=False):
     return (code, output)
 
 
-def run_local_check(command, shell=False):
-    code, out = run_local(command, shell)
+def run_local_check(command):
+    code, out = run_local(command)
     assert code == 0, 'some err occurred during the execution of cmd {}'.format(command)
     return out
 
@@ -204,9 +187,9 @@ def run_local_check(command, shell=False):
 def run_remote(host, path, command):
     cmd = [
         'ssh', '-T', '{host}'.format(host=host),
-        '"cd {path} && {command}"'.format(path=path, command=' '.join(command))
+        'cd {path} && {command}'.format(path=path, command=' '.join(command))
     ]
-    return run_local(' '.join(cmd), True)
+    return run_local(cmd)
 
 
 def run_remote_check(host, path, command):

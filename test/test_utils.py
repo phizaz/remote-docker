@@ -120,7 +120,7 @@ class UtilsTest(unittest.TestCase):
         remove(utils.path_file_ignore())
 
     def test_run_local(self):
-        code, out = utils.run_local(['echo', 'test'])
+        code, out = utils.run_local(['echo', 'test', '&&', 'echo', 'test2'])
         print(code)
         print(out)
 
@@ -140,6 +140,13 @@ class UtilsTest(unittest.TestCase):
         print(code)
         print(out)
 
+    def test_run_local_with_special(self):
+        code, out = utils.run_local([
+            'echo', '$(pwd)'
+        ])
+        print(code)
+        print(out)
+
     def test_run_local_check_err(self):
         from os.path import join
         import sys
@@ -149,12 +156,12 @@ class UtilsTest(unittest.TestCase):
             file
         ])
 
-    def test_run_global(self):
-        code, out = utils.run_remote('ta@desktop.dyn.konpat.me', '~/Projects/', ['echo', 'test'])
+    def test_run_remote(self):
+        code, out = utils.run_remote('ta@192.168.1.45', '~/Projects/', ['echo', 'test'])
         print(code)
         print(out)
         self.assertEqual(code, 0)
         self.assertEqual(out, 'test\n')
 
-    def test_run_global_check(self):
+    def test_run_remote_check(self):
         self.assertRaises(AssertionError, utils.run_remote_check, 'ta@desktop.dyn.konpat.me', '~/', ['aoeu'])

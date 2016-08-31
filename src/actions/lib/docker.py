@@ -24,6 +24,7 @@ def docker_run_command(image_tag, mount_path, command, docker='docker'):
 def docker_run(host, remote_path, image_tag, mount_path, command, docker='docker'):
     command = docker_run_command(image_tag, mount_path, command, docker)
     from src import utils
+    import sys
     out = utils.run_remote_check(host, remote_path, command)
     container = out.strip()
     return container

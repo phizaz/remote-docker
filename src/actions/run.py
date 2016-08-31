@@ -29,6 +29,8 @@ class Flow(object):
 
 class NormalFlow(Flow):
     def start(self):
+        log = None
+
         if self.job.step == Steps.SYNC_UP or not self.job.step:
             print('(1/6)')
             self.sync_up()
@@ -46,7 +48,7 @@ class NormalFlow(Flow):
             self.save()
         if self.job.step == Steps.LOG:
             print('4/6')
-            self.log()
+            log = self.log()
             self.job.step = Steps.REMOVE
             self.save()
         if self.job.step == Steps.REMOVE:
@@ -59,6 +61,8 @@ class NormalFlow(Flow):
             self.sync_down()
             self.job.step = None
             self.save()
+
+        return log
 
     def sync_up(self):
         from .lib.rsync import rsync_up
@@ -73,13 +77,13 @@ class NormalFlow(Flow):
 
     def run(self):
         from .lib.docker import docker_run
-        container = docker_run(self.job.using_host, '$(pwd)', self.job.tag, self.job.remote_path,
+        container = docker_run(self.job.using_host, self.job.remote_path, self.job.tag, '$(pwd)',
                                self.job.command)
         self.job.container = container
 
     def log(self):
         from .lib.docker import docker_logs_check
-        docker_logs_check(self.job.using_host, self.job.remote_path, self.job.container)
+        return docker_logs_check(self.job.using_host, self.job.remote_path, self.job.container)
 
     def remove(self):
         from .lib.docker import docker_rm
@@ -93,5 +97,6 @@ class NormalFlow(Flow):
 
 def run(job, db, flow_cls=NormalFlow):
     assert issubclass(flow_cls, Flow), 'flow_cls must be inherited from Flow'
+    db.update_latest(job.using_host)
     flow = flow_cls(job=job, db=db)
-    flow.start()
+    return flow.start()

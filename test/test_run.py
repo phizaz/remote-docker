@@ -13,11 +13,13 @@ class RunTest(unittest.TestCase):
                       hosts=['ta@192.168.1.45', 'ta@desktop.dyn.konpat.me'],
                       using_host='ta@192.168.1.45',
                       remote_path='~/test_remote_desktop_normal_flow',
-                      command=['echo', 'test'],
+                      command=['cat', 'supplementary/hello.py'],
                       step=None)
         ])
 
-        run.run(db.jobs[0], db, run.NormalFlow)
+        log = run.run(db.jobs[0], db, run.NormalFlow)
+        print(log)
+        self.assertEqual(log, 'print(\'hello world!\')\n')
 
         _db = utils.DB.load()
         print(_db.dict())
