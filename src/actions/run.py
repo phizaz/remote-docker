@@ -1,84 +1,70 @@
-def docker_build_command(image_tag, path, docker='docker'):
-    command = [
-        docker, 'build', '-t', image_tag, path
-    ]
-    return command
+class Steps(object):
+    SYNC_UP = 'SYNC_UP'
+    BUILD = 'BUILD'
+    RUN = 'RUN'
+    BUILD_AND_RUN = 'BUILD_AND_RUN'
+    LOG = 'LOG'
+    REMOVE = 'REMOVE'
+    LOG_AND_REMOVE = 'LOG_AND_REMOVE'
+    SYNC_DOWN = 'SYNC_DOWN'
 
 
-def docker_build(host, remote_path, image_tag, path, docker='docker'):
-    from src import utils
-    command = docker_build_command(image_tag, path, docker)
-    out = utils.run_remote_check(host, remote_path, command)
-    return out
+class Flow(object):
+    from abc import abstractmethod
+
+    def __init__(self, host, remote_path, command, job):
+        from src.utils import Job
+        assert isinstance(job, Job)
+        self.host = host
+        self.remote_path = remote_path
+        self.command = command
+        self.job = job
+
+    @abstractmethod
+    def start(self):
+        pass
 
 
-def docker_run_command(image_tag, mount_path, command, docker='docker'):
-    mounting = '-v {}:{}'.format(mount_path, '/run') if mount_path else ''
-    command = [
-                  docker, 'run', mounting,
-                  '-d', '-w', '/run', image_tag
-              ] + command
-    return command
+class NormalFlow(Flow):
+    def start(self):
+        if self.job.step == Steps.SYNC_UP or not self.job.step:
+            self.job.step = Steps.SYNC_UP
+            self.sync_up()
+            self.job.step = Steps.BUILD
+        if self.job.step == Steps.BUILD:
+            self.build()
+            self.job.step = Steps.RUN
+        if self.job.step == Steps.RUN:
+            self.run()
+            self.job.step = Steps.LOG
+        if self.job.step == Steps.LOG:
+            self.log()
+            self.job.step = Steps.REMOVE
+        if self.job.step == Steps.REMOVE:
+            self.remove()
+            self.job.step = Steps.SYNC_DOWN
+        if self.job.step == Steps.SYNC_DOWN:
+            self.sync_down()
+            self.job.step = None
 
+    def sync_up(self):
+        pass
 
-def docker_run(host, remote_path, image_tag, mount_path, command, docker='docker'):
-    command = docker_run_command(image_tag, mount_path, command, docker)
-    from src import utils
-    out = utils.run_remote_check(host, remote_path, ' '.join(command))
-    container = out.strip()
-    return container
+    def build(self):
+        pass
 
+    def run(self):
+        pass
 
-def docker_logs_command(container, docker='docker'):
-    command = [
-        docker, 'logs', '-f', container
-    ]
-    return command
+    def log(self):
+        pass
 
+    def remove(self):
+        pass
 
-def docker_logs(host, remote_path, container, docker='docker'):
-    command = docker_logs_command(container, docker)
-    from src import utils
-    out = utils.run_remote_check(host, remote_path, command)
-    return out
-
-
-def docker_logs_check(host, remote_path, container, docker='docker'):
-    out = docker_logs(host, remote_path, container, docker)
-    exit_code = docker_exit_code(host, remote_path, container, docker)
-    assert exit_code == 0, 'some error occurred during the execution of docker container {} err code {}'.format(
-        container, exit_code)
-    return out
-
-
-def docker_exit_code_command(container, docker='docker'):
-    command = [
-        docker, 'inspect', '-f', '{{.State.ExitCode}}', container
-    ]
-    return command
-
-
-def docker_exit_code(host, remote_path, container, docker='docker'):
-    command = docker_exit_code_command(container, docker)
-    from src import utils
-    out = utils.run_remote_check(host, remote_path, command)
-    return int(out)
-
-
-def docker_rm_command(container, docker='docker'):
-    command = [
-        docker, 'rm', '-f', container
-    ]
-    return command
-
-
-def docker_rm(host, remote_path, container, docker='docker'):
-    command = docker_rm_command(container, docker)
-    from src import utils
-    utils.run_remote_check(host, remote_path, command)
-    return container
+    def sync_down(self):
+        pass
 
 
 def run(tag, host, remote_path, command):
-
     pass
