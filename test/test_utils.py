@@ -34,11 +34,11 @@ class UtilsTest(unittest.TestCase):
         ])
 
     def test_run_global(self):
-        code, out = utils.run_global('ta@desktop.dyn.konpat.me', '~/Projects/', ['echo', 'test'])
+        code, out = utils.run_remote('ta@desktop.dyn.konpat.me', '~/Projects/', ['echo', 'test'])
         print(code)
         print(out)
         self.assertEqual(code, 0)
         self.assertEqual(out, 'test\n')
 
     def test_run_global_check(self):
-        self.assertRaises(AssertionError, utils.run_global_check, 'ta@desktop.dyn.konpat.me', '~/', ['aoeu'])
+        self.assertRaises(AssertionError, utils.run_remote_check, 'ta@desktop.dyn.konpat.me', '~/', ['aoeu'])

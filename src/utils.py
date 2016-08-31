@@ -63,7 +63,7 @@ def run_local_check(command, shell=False):
     return out
 
 
-def run_global(host, path, command):
+def run_remote(host, path, command):
     cmd = [
         'ssh', '-T', '{host}'.format(host=host),
         '"cd {path} && {command}"'.format(path=path, command=' '.join(command))
@@ -71,6 +71,6 @@ def run_global(host, path, command):
     return run_local(' '.join(cmd), True)
 
 
-def run_global_check(host, path, command):
-    code, out = run_global(host, path, command)
+def run_remote_check(host, path, command):
+    code, out = run_remote(host, path, command)
     assert code == 0, 'some err occured during the execution of cmd {}'.format(command)
