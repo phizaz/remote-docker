@@ -13,18 +13,20 @@ def docker_build(host, remote_path, image_tag, path, docker='docker'):
 
 
 def docker_run_command(image_tag, mount_path, command, docker='docker'):
-    mounting = '-v {}:{}'.format(mount_path, '/run') if mount_path else ''
-    command = [
-                  docker, 'run', mounting,
-                  '-d', '-w', '/run', image_tag
-              ] + command
-    return command
+    mounting = '-v {}:{}'.format(mount_path, '/run')
+    _command = [
+        docker, 'run']
+    if mount_path:
+        _command.append(mounting)
+    _command += [
+                    '-d', '-w', '/run', image_tag
+                ] + command
+    return _command
 
 
 def docker_run(host, remote_path, image_tag, mount_path, command, docker='docker'):
     command = docker_run_command(image_tag, mount_path, command, docker)
     from src import utils
-    import sys
     out = utils.run_remote_check(host, remote_path, command)
     container = out.strip()
     return container

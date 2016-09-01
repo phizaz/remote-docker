@@ -19,7 +19,7 @@ class DockerTest(unittest.TestCase):
                               'supplementary/hello.py'])
 
         command = docker.docker_run_command('debian:jessie', None, ['echo', 'test'], 'docker')
-        self.assertListEqual(command, ['docker', 'run', '', '-d', '-w', '/run', 'debian:jessie', 'echo', 'test'])
+        self.assertListEqual(command, ['docker', 'run', '-d', '-w', '/run', 'debian:jessie', 'echo', 'test'])
 
     def test_docker_logs_command(self):
         command = docker.docker_logs_command('aoeu', 'docker')
@@ -39,22 +39,23 @@ class DockerTest(unittest.TestCase):
     def test_docker_build_run_logs_exit_code_rm(self):
         from src import utils
         img = 'test_remotedocker_build'
-        command = docker.docker_build_command(img, '$(pwd)/supplementary', 'docker')
-        utils.run_local_check(' '.join(command), True)
+        command = docker.docker_build_command(img, '.', 'docker')
+        utils.run_local_check(command)
 
         command = docker.docker_run_command(img, None, ['echo', 'test'], 'docker')
-        container = utils.run_local_check(' '.join(command), True)
+        container = utils.run_local_check(command)
+        container = container.strip()
 
         command = docker.docker_logs_command(container, 'docker')
-        logs = utils.run_local_check(' '.join(command), True)
+        logs = utils.run_local_check(command)
         self.assertEqual(logs, 'test\n')
 
         command = docker.docker_exit_code_command(container, 'docker')
-        exit_code = utils.run_local_check(' '.join(command), True)
+        exit_code = utils.run_local_check(command)
         self.assertEqual(exit_code, '0\n')
 
         command = docker.docker_rm_command(container, 'docker')
-        utils.run_local_check(' '.join(command), True)
+        utils.run_local_check(command)
 
 
 

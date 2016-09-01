@@ -84,7 +84,7 @@ class CLITest(unittest.TestCase):
             file, 'run',
             '--tag=test_run_existing',
             '--host=ta@192.168.1.45',
-            '--path=~/Projects/test-remotedocker/run_plain'
+            '--path=~/Projects/test-remotedocker/run-plain'
             'echo', 'test'
         )
 
@@ -105,7 +105,7 @@ class CLITest(unittest.TestCase):
                     'using_host': 'ta@192.168.1.45',
                     'step': None,
                     'docker': 'docker',
-                    'remote_path': '~/Projects/test-remotedocker/run_with_host',
+                    'remote_path': '~/Projects/test-remotedocker/run-with-host',
                     'command': ['echo', 'test'],
                     'start_time': str(a),
                     'container': 'container',

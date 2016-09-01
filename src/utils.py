@@ -187,7 +187,7 @@ def run_local(command):
 
 def run_local_check(command):
     code, out = run_local(command)
-    assert code == 0, 'some err occurred during the execution of cmd {}'.format(command)
+    assert code == 0, 'some err occurred during the execution of cmd {} err code {}'.format(command, code)
     return out
 
 

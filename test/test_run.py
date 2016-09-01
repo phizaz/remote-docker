@@ -12,7 +12,7 @@ class RunTest(unittest.TestCase):
             utils.Job(tag='test_normal_flow',
                       hosts=['ta@192.168.1.45', 'ta@desktop.dyn.konpat.me'],
                       using_host='ta@192.168.1.45',
-                      remote_path='~/test_remote_desktop_normal_flow',
+                      remote_path='~/Projects/test-remotedocker/normal-flow',
                       command=['cat', 'supplementary/hello.py'],
                       step=None)
         ])
@@ -36,7 +36,7 @@ class RunTest(unittest.TestCase):
             utils.Job(tag='test_normal_flow',
                       hosts=['ta@192.168.1.45', 'ta@desktop.dyn.konpat.me'],
                       using_host='ta@192.168.1.45',
-                      remote_path='~/test_remote_desktop_normal_flow',
+                      remote_path='~/Projects/test-remotedocker/normal-flow',
                       command=['aoeu'],
                       step=None)
         ])
