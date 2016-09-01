@@ -1,3 +1,6 @@
+
+__version__ = '0.1'
+
 def act_list(args):
     from src.actions.list import print_list
     from src import utils
@@ -80,10 +83,17 @@ def act_remove(args):
 
 
 def main():
+    # init ignore if not exist
+    from os.path import exists
+    from src import utils
+
+    if not exists(utils.path_file_ignore()):
+        print('initiating a new .remotedignore, change it to suit your need')
+        utils.init_ignore()
+
     import sys
     from src.parser import parseargs, Actions
     args = parseargs(sys.argv[1:])
-    print(args)
 
     func_map = {
         Actions.LIST: act_list,

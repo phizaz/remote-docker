@@ -3,3 +3,6 @@ env
 .idea
 .DS_Store
 
+build
+dist
+remote_docker.egg-info

@@ -12,7 +12,8 @@ def parseargs(argv):
         def error(self, message):
             raise argparse.ArgumentError(None, message)
 
-    parser = ExceptionHandledArgumentParser('RemoteDocker')
+    from .remotedocker import __version__
+    parser = ExceptionHandledArgumentParser('RemoteDocker (version {}) : Run your script in a docker on another machine as if it were on yours'.format(__version__))
     subparse = parser.add_subparsers()
 
     parse_list = subparse.add_parser('list')
@@ -23,7 +24,7 @@ def parseargs(argv):
     parse_run.add_argument('--tag', required=True, help='tag')
     parse_run.add_argument('--host', help='host')
     parse_run.add_argument('--path', help='remote path')
-    parse_run.add_argument('--docker', default='docker', help='docker executable, you can provide this value to be something like `nvidia-docker`')
+    parse_run.add_argument('--docker', default='docker', help='docker executable, you can provide this value to be something like `nvidia-docker` (default: docker)')
     parse_run.set_defaults(action=Actions.RUN)
 
     parse_restart = subparse.add_parser('restart')

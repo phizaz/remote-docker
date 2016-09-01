@@ -12,7 +12,7 @@ def remove(tag, db):
         db.save()
 
     # remove job
-    print('Removing the job from DB')
+    print('Removing the tag {} from DB'.format(tag))
     db.remove_job(job)
     print('Done')
 
