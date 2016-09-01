@@ -2,6 +2,8 @@ import unittest
 from src.actions import run
 from src import utils
 
+remote_host = 'ta@desktop.dyn.konpat.me'
+
 class RunTest(unittest.TestCase):
 
     def test_normal_flow(self):
@@ -10,8 +12,8 @@ class RunTest(unittest.TestCase):
 
         db = utils.DB(None, [
             utils.Job(tag='test_normal_flow',
-                      hosts=['ta@192.168.1.45', 'ta@desktop.dyn.konpat.me'],
-                      using_host='ta@192.168.1.45',
+                      hosts=[remote_host],
+                      using_host=remote_host,
                       remote_path='~/Projects/test-remotedocker/normal-flow',
                       command=['cat', 'supplementary/hello.py'],
                       step=None)
@@ -34,8 +36,8 @@ class RunTest(unittest.TestCase):
 
         db = utils.DB(None, [
             utils.Job(tag='test_normal_flow',
-                      hosts=['ta@192.168.1.45', 'ta@desktop.dyn.konpat.me'],
-                      using_host='ta@192.168.1.45',
+                      hosts=[remote_host],
+                      using_host=remote_host,
                       remote_path='~/Projects/test-remotedocker/normal-flow',
                       command=['aoeu'],
                       step=None)

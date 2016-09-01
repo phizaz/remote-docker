@@ -1,6 +1,7 @@
 import unittest
 from src import utils
 
+remote_host = 'ta@desktop.dyn.konpat.me'
 
 class UtilsTest(unittest.TestCase):
     def test_DB_parse(self):
@@ -162,11 +163,11 @@ class UtilsTest(unittest.TestCase):
         ])
 
     def test_run_remote(self):
-        code, out = utils.run_remote('ta@192.168.1.45', '~/Projects/', ['echo', 'test'])
+        code, out = utils.run_remote(remote_host, '~/Projects/', ['echo', 'test'])
         print(code)
         print(out)
         self.assertEqual(code, 0)
         self.assertEqual(out, 'test\n')
 
     def test_run_remote_check(self):
-        self.assertRaises(AssertionError, utils.run_remote_check, 'ta@desktop.dyn.konpat.me', '~/', ['aoeu'])
+        self.assertRaises(AssertionError, utils.run_remote_check, remote_host, '~/', ['aoeu'])
