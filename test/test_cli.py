@@ -33,6 +33,8 @@ Steps:
 import src.utils
 import test.utils
 
+remote_host = 'ta@desktop.dyn.konpat.me'
+
 class CLITest(unittest.TestCase):
 
     def test_list(self):
@@ -41,6 +43,7 @@ class CLITest(unittest.TestCase):
         test.utils.run_python(file, 'list')
 
     def test_run_existing(self):
+        src.utils.init_ignore()
         import arrow
         a = arrow.utcnow()
         d = {
@@ -48,8 +51,8 @@ class CLITest(unittest.TestCase):
             'jobs': [
                 {
                     'tag': 'test_run_existing',
-                    'hosts': ['ta@192.168.1.45'],
-                    'using_host': 'ta@192.168.1.45',
+                    'hosts': [remote_host],
+                    'using_host': remote_host,
                     'step': None,
                     'docker': 'docker',
                     'remote_path': '~/Projects/test-remotedocker/run_existing',
@@ -60,6 +63,7 @@ class CLITest(unittest.TestCase):
                 }
             ]
         }
+
         from src import utils
         db = utils.DB.parse(d)
         db.save()
@@ -74,16 +78,18 @@ class CLITest(unittest.TestCase):
 
         from os import remove
         remove(utils.path_file_db())
+        remove(utils.path_file_ignore())
 
     def test_run(self):
         from src import utils
+        utils.init_ignore()
 
         from os.path import join
         file = join(src.utils.path_src(), 'remotedocker.py')
         output = test.utils.run_python(
             file, 'run',
             '--tag=test_run_existing',
-            '--host=ta@192.168.1.45',
+            '--host={}'.format(remote_host),
             '--path=~/Projects/test-remotedocker/run-plain'
             'echo', 'test'
         )
@@ -92,6 +98,7 @@ class CLITest(unittest.TestCase):
 
         from os import remove
         remove(utils.path_file_db())
+        remove(utils.path_file_ignore())
 
     def test_run_with_host(self):
         import arrow
@@ -101,8 +108,8 @@ class CLITest(unittest.TestCase):
             'jobs': [
                 {
                     'tag': 'test_run_existing',
-                    'hosts': ['ta@192.168.1.45'],
-                    'using_host': 'ta@192.168.1.45',
+                    'hosts': [remote_host],
+                    'using_host': remote_host,
                     'step': None,
                     'docker': 'docker',
                     'remote_path': '~/Projects/test-remotedocker/run-with-host',
@@ -114,6 +121,7 @@ class CLITest(unittest.TestCase):
             ]
         }
         from src import utils
+        utils.init_ignore()
         db = utils.DB.parse(d)
         db.save()
 
@@ -122,7 +130,7 @@ class CLITest(unittest.TestCase):
         output = test.utils.run_python(
             file, 'run',
             '--tag=test_run_existing',
-            '--host=ta@192.168.1.45',
+            '--host={}'.format(remote_host),
             'echo', 'test'
         )
 
@@ -130,6 +138,7 @@ class CLITest(unittest.TestCase):
 
         from os import remove
         remove(utils.path_file_db())
+        remove(utils.path_file_ignore())
 
     def test_restart(self):
         raise NotImplementedError

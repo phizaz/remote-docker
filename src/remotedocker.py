@@ -13,7 +13,7 @@ def act_run_old(args):
     if args.host:
         job.set_using_host(args.host)
 
-    from .actions import run
+    from src.actions import run
     run.run(job, db, run.NormalFlow)
 
 
@@ -47,7 +47,7 @@ def act_run_new(args):
                     docker=args.docker)
     db.add_job(job)
 
-    from .actions import run
+    from src.actions import run
     run.run(job, db, run.NormalFlow)
 
 

@@ -1,12 +1,12 @@
 jobs:
-- command: command
+- command: [echo, test]
   container: container
   docker: docker
-  hosts: [host1, host2]
+  hosts: [ta@desktop.dyn.konpat.me]
   oth: {a: 10}
-  remote_path: remote_path
-  start_time: '2016-08-31T16:01:13.270416+00:00'
-  step: step
-  tag: tag
-  using_host: host1
-latest_host: a
+  remote_path: ~/Projects/test-remotedocker/run_existing
+  start_time: '2016-09-01T02:42:16.070899+00:00'
+  step: null
+  tag: test_run_existing
+  using_host: ta@desktop.dyn.konpat.me
+latest_host: ta@desktop.dyn.konpat.me
