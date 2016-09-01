@@ -1,5 +1,5 @@
 
-__version__ = '0.1'
+__version__ = '0.2'
 
 def act_list(args):
     from src.actions.list import print_list
@@ -81,6 +81,12 @@ def act_remove(args):
     db = utils.DB.load()
     remove.remove(args.tag, db)
 
+def act_quit(signal, frame, args):
+    print('Exiting ...')
+    print('You can continue your work by:')
+    print('$ rdocker run --tag={}'.format(args.tag))
+    import sys
+    sys.exit(0)
 
 def main():
     # init ignore if not exist
@@ -94,6 +100,11 @@ def main():
     import sys
     from src.parser import parseargs, Actions
     args = parseargs(sys.argv[1:])
+
+    # register signal
+    import signal
+    import functools
+    signal.signal(signal.SIGINT, functools.partial(act_quit, args=args))
 
     func_map = {
         Actions.LIST: act_list,
