@@ -8,7 +8,7 @@ def dict_to_cli_args(d):
 
 def run_python(file, *args, **kwargs):
     import sys
-    return run_local_check((sys.executable, file) + args + dict_to_cli_args(kwargs))
+    return run_local_check((sys.executable, file) + dict_to_cli_args(kwargs) + args)
 
 
 def run_local(command):
@@ -30,6 +30,7 @@ def run_local(command):
 
 
 def run_local_check(command):
+    print('running:', command)
     code, out = run_local(command)
     assert code == 0, 'some err occurred during the execution of cmd {}'.format(command)
     return out

@@ -59,21 +59,21 @@ def act_run(args):
 
 
 def act_restart(args):
-    from .actions import restart
+    from src.actions import restart
     from src import utils
     db = utils.DB.load()
     restart.restart(args.tag, db)
 
 
 def act_stop(args):
-    from .actions import stop
+    from src.actions import stop
     from src import utils
     db = utils.DB.load()
     stop.stop(args.tag, db)
 
 
 def act_remove(args):
-    from .actions import remove
+    from src.actions import remove
     from src import utils
     db = utils.DB.load()
     remove.remove(args.tag, db)

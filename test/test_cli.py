@@ -35,8 +35,8 @@ import test.utils
 
 remote_host = 'ta@desktop.dyn.konpat.me'
 
-class CLITest(unittest.TestCase):
 
+class CLITest(unittest.TestCase):
     def test_list(self):
         from os.path import join
         file = join(src.utils.path_src(), 'remotedocker.py')
@@ -88,9 +88,9 @@ class CLITest(unittest.TestCase):
         file = join(src.utils.path_src(), 'remotedocker.py')
         output = test.utils.run_python(
             file, 'run',
-            '--tag=test_run_existing',
+            '--tag=test_run',
             '--host={}'.format(remote_host),
-            '--path=~/Projects/test-remotedocker/run-plain'
+            '--path=~/Projects/test-remotedocker/run-plain',
             'echo', 'test'
         )
 
@@ -129,9 +129,48 @@ class CLITest(unittest.TestCase):
         file = join(src.utils.path_src(), 'remotedocker.py')
         output = test.utils.run_python(
             file, 'run',
-            '--tag=test_run_existing',
+            '--tag=test_run_with_host',
             '--host={}'.format(remote_host),
             'echo', 'test'
+        )
+
+        print('run output:', output)
+
+        from os import remove
+        remove(utils.path_file_db())
+        remove(utils.path_file_ignore())
+
+    def test_run_by_adding_new_hots(self):
+        import arrow
+        a = arrow.utcnow()
+        d = {
+            'latest_host': 'a',
+            'jobs': [
+                {
+                    'tag': 'test_run_adding_new_host',
+                    'hosts': ['someexistinghost'],
+                    'using_host': 'someexistinghost',
+                    'step': None,
+                    'docker': 'docker',
+                    'remote_path': '~/Projects/test-remotedocker/run-adding-new-host',
+                    'command': ['echo', 'test'],
+                    'start_time': str(a),
+                    'container': 'container',
+                    'oth': dict(a=10),
+                }
+            ]
+        }
+        from src import utils
+        utils.init_ignore()
+        db = utils.DB.parse(d)
+        db.save()
+
+        from os.path import join
+        file = join(src.utils.path_src(), 'remotedocker.py')
+        output = test.utils.run_python(
+            file, 'run',
+            '--tag=test_run_adding_new_host',
+            '--host={}'.format(remote_host)
         )
 
         print('run output:', output)
@@ -152,14 +191,83 @@ class CLITest(unittest.TestCase):
     def test_full(self):
         from src import utils
         from os.path import join
+
         file = join(src.utils.path_src(), 'remotedocker.py')
-        output = test.utils.run_python(
-            file, 'run',
-            '--tag=test_run_existing',
-            '--host=ta@192.168.1.45',
-            'echo', 'test'
-        )
-        raise NotImplementedError
+
+        utils.init_ignore()
+        utils.init_db()
+
+        '''
+        Init run
+        $ remotedocker run --tag=tag --host=host --path=path echo test
+        '''
+        print('=====INIT RUN=====')
+        test.utils.run_python(file, 'run',
+                              '--tag=test_full_first',
+                              '--host', remote_host,
+                              '--path', '~/Projects/test-remotedocker/full',
+                              'echo', 'test')
+
+        '''
+        Run again
+        $ remotedocker run --tag=tag
+        '''
+        print('=====RUN AGAIN=====')
+        test.utils.run_python(file, 'run',
+                              '--tag=test_full_first')
+
+        '''
+        Add a host to the same run
+        $ remotedocker run --tag=tag --host=newhost
+        '''
+        print('=====ADD HOST TO THE EXISTING RUN=====')
+        db = utils.DB.load()
+        db.jobs[0].host = 'somehost'
+        db = utils.DB.parse(db.dict())
+        db.save()
+
+        db = utils.DB.load()
+
+        print('current host:', db.jobs[0].using_host)
+
+        another_host = remote_host
+        test.utils.run_python(file, 'run',
+                              '--tag=test_full_first',
+                              '--host={}'.format(another_host))
+
+        '''
+        Start another run with the same host (latest) (same path)
+        $ remotedocker run --tag=newtag echo test2
+        '''
+        print('=====START ANOTHER RUN WITH THE SAME HOST=====')
+        test.utils.run_python(file, 'run',
+                              '--tag=test_full_second',
+                              'echo', 'test2')
+
+        '''
+        Restart the succeeded run
+        '''
+        print('=====RESTART=====')
+        self.assertRaises(Exception, test.utils.run_python, file, 'restart', 'test_full_first')
+
+        '''
+        Stop the succeeded run
+        '''
+        print('=====STOP THE SUCCEEDED RUN=====')
+        self.assertRaises(Exception, test.utils.run_python, file, 'stop', 'test_full_first')
+
+        '''
+        Remove the first run
+        '''
+        print('=====REMOVE THE FIRST RUN=====')
+        test.utils.run_python(file, 'rm', 'test_full_first')
+
+        db = utils.DB.load()
+        self.assertEqual(len(db.jobs), 1)
+        self.assertEqual(db.jobs[0].tag, 'test_full_second')
 
 
+        from os import remove
+        remove(utils.path_file_ignore())
+        remove(utils.path_file_db())
 

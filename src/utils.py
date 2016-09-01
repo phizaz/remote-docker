@@ -156,9 +156,8 @@ def path_file_ignore():
 
 
 def init_db():
-    from shutil import copy
-    from os.path import join
-    copy(join(path_src(), 'static', Files.DB), path_file_db())
+    db = DB(None, [])
+    db.save()
 
 
 def init_ignore():
