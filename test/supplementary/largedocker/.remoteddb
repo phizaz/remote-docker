@@ -4,9 +4,9 @@ jobs:
   docker: docker
   hosts: [ta@desktop.dyn.konpat.me]
   oth: null
-  remote_path: ~/Projects/test-remotedocker/full
-  start_time: '2016-09-01T06:48:55.716198+00:00'
-  step: null
-  tag: test_full_first
+  remote_path: ~/Projects/test-remotedocker/large
+  start_time: '2016-09-01T07:45:21.644279+00:00'
+  step: BUILD
+  tag: largedocker
   using_host: ta@desktop.dyn.konpat.me
 latest_host: ta@desktop.dyn.konpat.me

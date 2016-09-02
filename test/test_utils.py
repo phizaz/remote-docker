@@ -126,9 +126,12 @@ class UtilsTest(unittest.TestCase):
         remove(utils.path_file_ignore())
 
     def test_run_local(self):
-        code, out = utils.run_local(['echo', 'test', '&&', 'echo', 'test2'])
+        code, out = utils.run_local(['echo', 'test'])
         print(code)
         print(out)
+
+        self.assertEqual(code, 0)
+        self.assertListEqual(out, ['test'])
 
     def test_run_local_realtime(self):
         code, out = utils.run_local(['find', utils.path_src(), '-name', 'test'])
@@ -167,7 +170,24 @@ class UtilsTest(unittest.TestCase):
         print(code)
         print(out)
         self.assertEqual(code, 0)
-        self.assertEqual(out, 'test\n')
+        self.assertListEqual(out, ['test'])
 
     def test_run_remote_check(self):
         self.assertRaises(AssertionError, utils.run_remote_check, remote_host, '~/', ['aoeu'])
+
+    def test_run_local_with_tty(self):
+        out = utils.run_local_with_tty(['echo', 'test'])
+        self.assertListEqual(out, ['test'])
+
+    def test_run_remote_with_tty(self):
+        out = utils.run_remote_with_tty(remote_host, '~/Projects/', ['echo', 'test'])
+        print(out)
+        self.assertListEqual(out, ['test'])
+
+    def test_run_local_check_return_last(self):
+        out = utils.run_local_check_return_last(['echo', 'test'])
+        self.assertEqual(out, 'test')
+
+    def test_run_remote_with_tty_return_last(self):
+        out = utils.run_remote_with_tty_return_last(remote_host, '~/Projects', ['echo', 'test'])
+        self.assertEqual(out, 'test')

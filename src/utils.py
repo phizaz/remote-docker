@@ -170,14 +170,11 @@ def run_local(command):
     import subprocess
     import sys
 
-    p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=sys.stdout)
+    p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=sys.stdout, bufsize=0)
 
-    output = ''
-    for line in iter(p.stdout.readline, ''):
-        if not line: break
-        line = line.decode('utf-8')
-        output += line
-        print(line, end='')
+    output = []
+    for line in iter(p.stdout.readline, b''):
+        output.append(line.decode('utf-8').strip())
 
     code = p.wait()
 
@@ -187,6 +184,19 @@ def run_local(command):
 def run_local_check(command):
     code, out = run_local(command)
     assert code == 0, 'some err occurred during the execution of cmd {} err code {}'.format(command, code)
+    return out
+
+
+def run_local_check_return_last(command):
+    out = run_local_check(command)
+    return out[-1]
+
+
+def run_local_with_tty(command):
+    from .lib.ptty import PTY
+    out = PTY().spawn(command)
+    import capturer
+    out = capturer.interpret_carriage_returns(out)
     return out
 
 
@@ -202,3 +212,25 @@ def run_remote_check(host, path, command):
     code, out = run_remote(host, path, command)
     assert code == 0, 'some err occured during the execution of cmd {} err code {}'.format(command, code)
     return out
+
+
+def run_remote_check_return_last(host, path, command):
+    out = run_remote_check(host, path, command)
+    return out[-1]
+
+
+def run_remote_with_tty(host, path, command):
+    cmd = [
+        'ssh', '-t', '{host}'.format(host=host),
+        'cd {path} && {command}'.format(path=path, command=' '.join(command))
+    ]
+    out = run_local_with_tty(cmd)
+    if 'Connection to' in out[-1]:
+        # remove the text from ssh
+        out.pop()
+    return out
+
+
+def run_remote_with_tty_return_last(host, path, command):
+    out = run_remote_with_tty(host, path, command)
+    return out[-1]

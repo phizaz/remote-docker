@@ -23,7 +23,8 @@ setup(
         'future',
         'pyyaml',
         'arrow',
-        'tabulate'
+        'tabulate',
+        'capturer'
     ],
     entry_points={
         "console_scripts": [
