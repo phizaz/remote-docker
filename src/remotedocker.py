@@ -37,7 +37,7 @@ def act_run_new(args):
     try:
         job = db.get_job_by_tag(args.tag)
         raise utils.errors.JobDuplicate('job duplicate with tag: {} host: {}'.format(job.tag, job.hosts))
-    except ValueError:
+    except utils.errors.TagNotFound:
         # no job duplicate great!
         pass
 
@@ -115,8 +115,11 @@ def main():
     }
 
     # call function
-    func_map[args.action](args)
-
+    try:
+        func_map[args.action](args)
+    except utils.errors.RemoteDockerError as e:
+        print(e)
+        sys.exit(1)
 
 if __name__ == '__main__':
     main()

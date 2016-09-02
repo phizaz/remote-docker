@@ -7,22 +7,28 @@ from ptyprocess import PtyProcessUnicode
 STDIN_FD = sys.stdin.fileno()
 STDOUT_FD = sys.stdout.fileno()
 
+
 class PTY(object):
     def __init__(self):
         self.mode = None
         self.log = ''
         self.pty = None
 
-    def spawn(self, argv):
-        signal.signal(signal.SIGINT, self.quit)
+    def set_quit_signal(self):
+        oldsignal = signal.getsignal(signal.SIGINT)
+        import types
+        if isinstance(oldsignal, types.BuiltinFunctionType):
+            signal.signal(signal.SIGINT, self.quit)
 
+    def spawn(self, argv):
+        self.set_quit_signal()
         self.pty = PtyProcessUnicode.spawn(argv)
         self._copy()
         self.pty.wait()
         return (self.pty.exitstatus, self.log)
 
     def quit(self, *args, **kwargs):
-        sys.exit(1)
+        sys.exit(1)  # must exit with something not '0'
 
     def write_log(self, b):
         assert isinstance(b, str), 'log only str'

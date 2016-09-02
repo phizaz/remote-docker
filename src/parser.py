@@ -39,5 +39,9 @@ def parseargs(argv):
     parse_remove.add_argument('tag')
     parse_remove.set_defaults(action=Actions.REMOVE)
 
-    args = parser.parse_args(argv)
-    return args
+    try:
+        args = parser.parse_args(argv)
+        return args
+    except argparse.ArgumentError as e:
+        from src import utils
+        raise utils.errors.ArgumentError(str(e))

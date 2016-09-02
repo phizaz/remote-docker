@@ -1,13 +1,17 @@
-class TagNotFound(Exception): pass
+class RemoteDockerError(Exception): pass
 
-class HostNotFound(Exception): pass
+class ArgumentError(RemoteDockerError): pass
 
-class LatestHostNotFound(Exception): pass
+class TagNotFound(RemoteDockerError): pass
 
-class JobDuplicate(Exception): pass
+class HostNotFound(RemoteDockerError): pass
 
-class JobNotStarted(Exception): pass
+class LatestHostNotFound(RemoteDockerError): pass
 
-class WrongDockerExitcode(Exception): pass
+class JobDuplicate(RemoteDockerError): pass
 
-class WrongExitCode(Exception): pass
+class JobNotStarted(RemoteDockerError): pass
+
+class WrongDockerExitcode(RemoteDockerError): pass
+
+class WrongExitCode(RemoteDockerError): pass

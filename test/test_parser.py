@@ -1,13 +1,18 @@
 import unittest
 
 from src.parser import parseargs, Actions
-
+from src import utils
 
 class ParserTest(unittest.TestCase):
     def test_list(self):
         args = parseargs(['list'])
         print(args)
         self.assertEqual(args.action, Actions.LIST)
+
+    def test_run_with_alien(self):
+        self.assertRaises(utils.errors.ArgumentError, parseargs, [
+            'run', '--tag=test', '--host=aoeu', '--path=path', '--alien=10'
+        ])
 
     def test_run_with_host_and_path(self):
         args = parseargs(
