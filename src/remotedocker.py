@@ -1,5 +1,5 @@
 
-__version__ = '0.2'
+__version__ = '0.3'
 
 def act_list(args):
     from src.actions.list import print_list

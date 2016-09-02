@@ -17,7 +17,7 @@ version = get_version_from(join(dirname(__file__), 'src', 'remotedocker.py'))
 
 setup(
     name='remote-docker',
-    packages=['src', 'src.actions', 'src.actions.lib'],
+    packages=['src', 'src.actions', 'src.actions.lib', 'src.lib'],
     include_package_data=True,
     install_requires=[
         'future',
