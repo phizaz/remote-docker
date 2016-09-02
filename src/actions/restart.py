@@ -5,7 +5,7 @@ def restart(tag, db):
     job = db.get_job_by_tag(tag)
 
     if not job.step:
-        raise utils.errors.JobNotStarted('the job of the given tag {} has not started yet'.format(tag))
+        print('Job of tag: {} has not started yet, will now start!'.format(tag))
 
     if job.container:
         print('Stopping and removing the running container')
@@ -18,6 +18,6 @@ def restart(tag, db):
     job.step = None
     db.save()
 
-    print('Restarting the process')
+    print('Restarting the process of tag: {}'.format(tag))
     from .run import run, NormalFlow
     run(job, db, NormalFlow)

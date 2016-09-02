@@ -180,7 +180,9 @@ def run_local(command):
 
     output = []
     for line in iter(p.stdout.readline, b''):
-        output.append(line.decode('utf-8').strip())
+        line = line.decode('utf-8')
+        output.append(line.strip())
+        sys.stdout.write(line) # also output to the screen
 
     code = p.wait()
 
