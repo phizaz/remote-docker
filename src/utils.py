@@ -199,6 +199,10 @@ def run_local_with_tty(command):
     out = capturer.interpret_carriage_returns(out)
     return out
 
+def run_local_with_tty_return_last(command):
+    out = run_local_with_tty(command)
+    return out[-1]
+
 
 def run_remote(host, path, command):
     cmd = [
