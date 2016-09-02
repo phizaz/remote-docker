@@ -10,7 +10,7 @@ def rsync_up_command(host, remote_path):
 def rsync_up(host, remote_path):
     from src import utils
     command = rsync_up_command(host, remote_path)
-    return utils.run_local_check(command)
+    return utils.run_local_check_return_last(command)
 
 def rsync_down_command(host, remote_path):
     from src.utils import Files
@@ -25,5 +25,5 @@ def rsync_down_command(host, remote_path):
 def rsync_down(host, remote_path):
     from src import utils
     command = rsync_down_command(host, remote_path)
-    return utils.run_local_check(command)
+    return utils.run_local_check_return_last(command)
 
