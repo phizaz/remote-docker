@@ -5,7 +5,7 @@ def stop(tag, db):
     job = db.get_job_by_tag(tag)
 
     if not job.stop:
-        raise Exception('the job of the given tag {} has not started yet'.format(tag))
+        raise utils.errors.JobNotStarted('the job of the given tag {} has not started yet'.format(tag))
 
     if job.container:
         print('Stopping and removing the running container')

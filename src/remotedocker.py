@@ -26,7 +26,7 @@ def act_run_new(args):
 
     if not args.host:
         if not db.latest_host:
-            raise Exception('no default (latest) host, must explicitly provide one')
+            raise utils.errors.LatestHostNotFound('no default (latest) host, must explicitly provide one')
         args.host = db.latest_host
 
     if not args.path:
@@ -36,7 +36,7 @@ def act_run_new(args):
 
     try:
         job = db.get_job_by_tag(args.tag)
-        raise Exception('job duplicate with tag: {} host: {}'.format(job.tag, job.hosts))
+        raise utils.errors.JobDuplicate('job duplicate with tag: {} host: {}'.format(job.tag, job.hosts))
     except ValueError:
         # no job duplicate great!
         pass

@@ -160,7 +160,7 @@ class UtilsTest(unittest.TestCase):
         from os.path import join
         import sys
         file = join(utils.path_test(), 'supplementary', 'err_raise.py')
-        self.assertRaises(Exception, utils.run_local_check, [
+        self.assertRaises(utils.errors.WrongExitCode, utils.run_local_check, [
             sys.executable,
             file
         ])
@@ -173,14 +173,18 @@ class UtilsTest(unittest.TestCase):
         self.assertListEqual(out, ['test'])
 
     def test_run_remote_check(self):
-        self.assertRaises(AssertionError, utils.run_remote_check, remote_host, '~/', ['aoeu'])
+        self.assertRaises(utils.errors.WrongExitCode, utils.run_remote_check, remote_host, '~/', ['aoeu'])
 
     def test_run_local_with_tty(self):
-        out = utils.run_local_with_tty(['echo', 'test'])
+        code, out = utils.run_local_with_tty(['echo', 'test'])
+        self.assertEqual(code, 0)
         self.assertListEqual(out, ['test'])
 
-    def test_run_remote_with_tty(self):
-        out = utils.run_remote_with_tty(remote_host, '~/Projects/', ['echo', 'test'])
+    def test_run_local_with_tty_check_err(self):
+        self.assertRaises(utils.errors.WrongExitCode, utils.run_local_with_tty_check, ['aoeu'])
+
+    def test_run_remote_with_tty_check(self):
+        out = utils.run_remote_with_tty_check(remote_host, '~/Projects/', ['echo', 'test'])
         print(out)
         self.assertListEqual(out, ['test'])
 
@@ -188,6 +192,6 @@ class UtilsTest(unittest.TestCase):
         out = utils.run_local_check_return_last(['echo', 'test'])
         self.assertEqual(out, 'test')
 
-    def test_run_remote_with_tty_return_last(self):
-        out = utils.run_remote_with_tty_return_last(remote_host, '~/Projects', ['echo', 'test'])
+    def test_run_remote_with_tty_check_return_last(self):
+        out = utils.run_remote_with_tty_check_return_last(remote_host, '~/Projects', ['echo', 'test'])
         self.assertEqual(out, 'test')

@@ -24,7 +24,8 @@ setup(
         'pyyaml',
         'arrow',
         'tabulate',
-        'capturer'
+        'capturer',
+        'ptyprocess',
     ],
     entry_points={
         "console_scripts": [

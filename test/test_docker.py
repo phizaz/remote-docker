@@ -40,22 +40,22 @@ class DockerTest(unittest.TestCase):
         from src import utils
         img = 'test_remotedocker_build'
         command = docker.docker_build_command(img, '.', 'docker')
-        utils.run_local_with_tty_return_last(command)
+        utils.run_local_with_tty_check_return_last(command)
 
         command = docker.docker_run_command(img, None, ['echo', 'test'], 'docker')
-        container = utils.run_local_with_tty_return_last(command)
+        container = utils.run_local_with_tty_check_return_last(command)
         container = container.strip()
 
         command = docker.docker_logs_command(container, 'docker')
-        logs = utils.run_local_with_tty_return_last(command)
+        logs = utils.run_local_with_tty_check_return_last(command)
         self.assertEqual(logs, 'test')
 
         command = docker.docker_exit_code_command(container, 'docker')
-        exit_code = utils.run_local_with_tty_return_last(command)
+        exit_code = utils.run_local_with_tty_check_return_last(command)
         self.assertEqual(exit_code, '0')
 
         command = docker.docker_rm_command(container, 'docker')
-        utils.run_local_with_tty_return_last(command)
+        utils.run_local_with_tty_check_return_last(command)
 
 
 

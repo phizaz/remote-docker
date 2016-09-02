@@ -1,3 +1,6 @@
+from . import errors
+
+
 class Files(object):
     DB = '.remoteddb'
     IGNORE = '.remotedignore'
@@ -24,13 +27,13 @@ class DB(object):
         for job in self.jobs:
             if job.tag == tag:
                 return job
-        raise ValueError('job with tag {} not found in the DB'.format(tag))
+        raise errors.TagNotFound('job with tag {} not found in the DB'.format(tag))
 
     def get_path_by_host(self, host):
         for job in self.jobs:
             if host in job.hosts:
                 return job.remote_path
-        raise ValueError('job with host {} not found in the DB'.format(host))
+        raise errors.HostNotFound('job with host {} not found in the DB'.format(host))
 
     def dict(self):
         return {
@@ -183,7 +186,10 @@ def run_local(command):
 
 def run_local_check(command):
     code, out = run_local(command)
-    assert code == 0, 'some err occurred during the execution of cmd {} err code {}'.format(command, code)
+
+    if code != 0:
+        raise errors.WrongExitCode('some err occurred during the execution of cmd {} err code {}'.format(command, code))
+
     return out
 
 
@@ -194,13 +200,26 @@ def run_local_check_return_last(command):
 
 def run_local_with_tty(command):
     from .lib.ptty import PTY
-    out = PTY().spawn(command)
+    code, out = PTY().spawn(command)
     import capturer
     out = capturer.interpret_carriage_returns(out)
+    return (code, out)
+
+
+def run_local_with_tty_check(command):
+    try:
+        code, out = run_local_with_tty(command)
+    except FileNotFoundError:
+        raise errors.WrongExitCode('command not found err occured during the execution of cmd {}'.format(command))
+
+    if code != 0:
+        raise errors.WrongExitCode('some err occured during the execution of cmd {} err code {}'.format(command, code))
+
     return out
 
-def run_local_with_tty_return_last(command):
-    out = run_local_with_tty(command)
+
+def run_local_with_tty_check_return_last(command):
+    out = run_local_with_tty_check(command)
     return out[-1]
 
 
@@ -214,7 +233,10 @@ def run_remote(host, path, command):
 
 def run_remote_check(host, path, command):
     code, out = run_remote(host, path, command)
-    assert code == 0, 'some err occured during the execution of cmd {} err code {}'.format(command, code)
+
+    if code != 0:
+        raise errors.WrongExitCode('some err occured during the execution of cmd {} err code {}'.format(command, code))
+
     return out
 
 
@@ -223,18 +245,18 @@ def run_remote_check_return_last(host, path, command):
     return out[-1]
 
 
-def run_remote_with_tty(host, path, command):
+def run_remote_with_tty_check(host, path, command):
     cmd = [
         'ssh', '-t', '{host}'.format(host=host),
         'cd {path} && {command}'.format(path=path, command=' '.join(command))
     ]
-    out = run_local_with_tty(cmd)
+    out = run_local_with_tty_check(cmd)
     if 'Connection to' in out[-1]:
         # remove the text from ssh
         out.pop()
     return out
 
 
-def run_remote_with_tty_return_last(host, path, command):
-    out = run_remote_with_tty(host, path, command)
+def run_remote_with_tty_check_return_last(host, path, command):
+    out = run_remote_with_tty_check(host, path, command)
     return out[-1]

@@ -8,7 +8,7 @@ def docker_build_command(image_tag, path, docker='docker'):
 def docker_build(host, remote_path, image_tag, path, docker='docker'):
     from src import utils
     command = docker_build_command(image_tag, path, docker)
-    out = utils.run_remote_with_tty_return_last(host, remote_path, command)
+    out = utils.run_remote_with_tty_check_return_last(host, remote_path, command)
     return out
 
 
@@ -27,7 +27,7 @@ def docker_run_command(image_tag, mount_path, command, docker='docker'):
 def docker_run(host, remote_path, image_tag, mount_path, command, docker='docker'):
     command = docker_run_command(image_tag, mount_path, command, docker)
     from src import utils
-    out = utils.run_remote_with_tty_return_last(host, remote_path, command)
+    out = utils.run_remote_with_tty_check_return_last(host, remote_path, command)
     container = out.strip()
     return container
 
@@ -42,15 +42,20 @@ def docker_logs_command(container, docker='docker'):
 def docker_logs(host, remote_path, container, docker='docker'):
     command = docker_logs_command(container, docker)
     from src import utils
-    out = utils.run_remote_with_tty_return_last(host, remote_path, command)
+    out = utils.run_remote_with_tty_check_return_last(host, remote_path, command)
     return out
 
 
 def docker_logs_check(host, remote_path, container, docker='docker'):
     out = docker_logs(host, remote_path, container, docker)
     exit_code = docker_exit_code(host, remote_path, container, docker)
-    assert exit_code == 0, 'some error occurred during the execution of docker container {} err code {}'.format(
-        container, exit_code)
+
+    if exit_code != 0:
+        from src import utils
+        raise utils.errors.WrongDockerExitcode(
+            'some error occurred during the execution of docker container {} err code {}'.format(
+                container, exit_code))
+
     return out
 
 
@@ -64,7 +69,7 @@ def docker_exit_code_command(container, docker='docker'):
 def docker_exit_code(host, remote_path, container, docker='docker'):
     command = docker_exit_code_command(container, docker)
     from src import utils
-    out = utils.run_remote_with_tty_return_last(host, remote_path, command)
+    out = utils.run_remote_with_tty_check_return_last(host, remote_path, command)
     return int(out)
 
 
@@ -78,5 +83,5 @@ def docker_rm_command(container, docker='docker'):
 def docker_rm(host, remote_path, container, docker='docker'):
     command = docker_rm_command(container, docker)
     from src import utils
-    utils.run_remote_with_tty_return_last(host, remote_path, command)
+    utils.run_remote_with_tty_check_return_last(host, remote_path, command)
     return container

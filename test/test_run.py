@@ -43,7 +43,7 @@ class RunTest(unittest.TestCase):
                       step=None)
         ])
 
-        self.assertRaises(Exception, run.run, db.jobs[0], db, run.NormalFlow)
+        self.assertRaises(utils.errors.WrongDockerExitcode, run.run, db.jobs[0], db, run.NormalFlow)
 
         from os import remove
         remove(utils.path_file_ignore())
