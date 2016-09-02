@@ -48,3 +48,4 @@ class RunTest(unittest.TestCase):
         from os import remove
         remove(utils.path_file_ignore())
         remove(utils.path_file_db())
+

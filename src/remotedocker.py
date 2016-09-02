@@ -14,7 +14,14 @@ def act_run_old(args):
     job = db.get_job_by_tag(args.tag)
 
     if args.host:
+        print('Using host: {}'.format(args.host))
         job.set_using_host(args.host)
+        db.save()
+
+    if args.docker:
+        print('Run using docker: {}'.format(args.docker))
+        job.set_docker(args.docker)
+        db.save()
 
     from src.actions import run
     run.run(job, db, run.NormalFlow)

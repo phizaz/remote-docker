@@ -96,6 +96,9 @@ class Job(object):
             self.hosts.append(host)
         self.using_host = host
 
+    def set_docker(self, docker):
+        self.docker = docker
+
     def dict(self):
         return {
             'tag': self.tag,

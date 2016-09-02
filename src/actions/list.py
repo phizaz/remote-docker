@@ -10,7 +10,7 @@ def print_list(db):
     print('----------------------------------------')
 
     table = []
-    header = ['tag', 'using_host', 'command', 'step', 'remote_path', 'time_elapsed', 'all hosts']
+    header = ['tag', 'using_host', 'command', 'step', 'remote_path', 'time_elapsed', 'all hosts', 'docker']
 
     rows = zip(
         row_of('tag', db.jobs),
@@ -20,6 +20,7 @@ def print_list(db):
         row_of('remote_path', db.jobs),
         list(map(lambda x: x.time_elapsed(), db.jobs)),
         row_of('hosts', db.jobs),
+        row_of('docker', db.jobs)
     )
 
     table.append(header)
