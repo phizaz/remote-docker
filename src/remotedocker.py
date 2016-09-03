@@ -40,6 +40,9 @@ def act_run_new(args):
     from src import utils
     db = utils.DB.load()
 
+    if not args.tag:
+        raise utils.errors.ArgumentError('Tag not provided')
+
     if not args.host:
         if not db.latest_host:
             raise utils.errors.LatestHostNotFound('No default (latest) host, must explicitly provide one')

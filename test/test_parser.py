@@ -49,14 +49,23 @@ class ParserTest(unittest.TestCase):
         self.assertEqual(args.action, Actions.RESTART)
         self.assertEqual(args.tag, 'tag')
 
+        args = parseargs(['restart'])
+        print(args)
+        self.assertIsNone(args.tag)
+
     def test_stop(self):
         args = parseargs(['stop', 'tag'])
         print(args)
         self.assertEqual(args.action, Actions.STOP)
         self.assertEqual(args.tag, 'tag')
 
+        args = parseargs(['stop'])
+        self.assertIsNone(args.tag)
+
     def test_rm(self):
         args = parseargs(['rm', 'tag'])
         print(args)
         self.assertEqual(args.action, Actions.REMOVE)
         self.assertEqual(args.tag, 'tag')
+
+        self.assertRaises(utils.errors.ArgumentError, parseargs, ['rm'])

@@ -21,22 +21,22 @@ def parseargs(argv):
 
     parse_run = subparse.add_parser('run')
     parse_run.add_argument('command', nargs=argparse.REMAINDER)
-    parse_run.add_argument('--tag', help='tag')
+    parse_run.add_argument('--tag', help='a tag, latest used if not provided (only for running the old tag)')
     parse_run.add_argument('--host', help='host')
     parse_run.add_argument('--path', help='remote path')
     parse_run.add_argument('--docker', default='docker', help='docker executable, you can provide this value to be something like `nvidia-docker` (default: docker)')
     parse_run.set_defaults(action=Actions.RUN)
 
     parse_restart = subparse.add_parser('restart')
-    parse_restart.add_argument('tag')
+    parse_restart.add_argument('tag', nargs='?', help='a tag, latest used if not provided')
     parse_restart.set_defaults(action=Actions.RESTART)
 
     parse_stop = subparse.add_parser('stop')
-    parse_stop.add_argument('tag')
+    parse_stop.add_argument('tag', nargs='?', help='a tag, latest used if not provided')
     parse_stop.set_defaults(action=Actions.STOP)
 
     parse_remove = subparse.add_parser('rm')
-    parse_remove.add_argument('tag')
+    parse_remove.add_argument('tag', help='a tag, you must specify this explicitly')
     parse_remove.set_defaults(action=Actions.REMOVE)
 
     try:

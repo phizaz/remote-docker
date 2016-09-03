@@ -42,6 +42,18 @@ class CLITest(unittest.TestCase):
         file = join(src.utils.path_src(), 'remotedocker.py')
         test.utils.run_python(file, 'list')
 
+    def test_run_err_without_tag(self):
+        src.utils.init_ignore()
+
+        from os.path import join
+        file = join(src.utils.path_src(), 'remotedocker.py')
+        self.assertRaises(Exception, test.utils.run_python,
+            file, 'run', '--host=something', '--path=somepath', 'echo', 'test'
+        )
+
+        from os import remove
+        remove(src.utils.path_file_ignore())
+
     def test_run_existing(self):
         src.utils.init_ignore()
         import arrow
