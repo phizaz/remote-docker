@@ -53,7 +53,7 @@ def docker_logs_check(host, remote_path, container, docker='docker'):
     if exit_code != 0:
         from src import utils
         raise utils.errors.WrongDockerExitcode(
-            'some error occurred during the execution of docker container {} err code {}'.format(
+            'Some error occurred in the docker container: {} with error code: {}'.format(
                 container, exit_code))
 
     return out

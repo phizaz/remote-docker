@@ -27,13 +27,13 @@ class DB(object):
         for job in self.jobs:
             if job.tag == tag:
                 return job
-        raise errors.TagNotFound('job with tag {} not found in the DB'.format(tag))
+        raise errors.TagNotFound('Job with tag: {} not found in the DB'.format(tag))
 
     def get_path_by_host(self, host):
         for job in self.jobs:
             if host in job.hosts:
                 return job.remote_path
-        raise errors.HostNotFound('job with host {} not found in the DB'.format(host))
+        raise errors.HostNotFound('Job with host: {} not found in the DB'.format(host))
 
     def dict(self):
         return {
@@ -193,7 +193,7 @@ def run_local_check(command):
     code, out = run_local(command)
 
     if code != 0:
-        raise errors.WrongExitCode('some err occurred during the execution of cmd {} err code {}'.format(command, code))
+        raise errors.WrongExitCode('Error occurred while running cmd: {} with err code: {}'.format(command, code))
 
     return out
 
@@ -215,10 +215,10 @@ def run_local_with_tty_check(command):
     try:
         code, out = run_local_with_tty(command)
     except FileNotFoundError:
-        raise errors.WrongExitCode('command not found err occured during the execution of cmd {}'.format(command))
+        raise errors.WrongExitCode('Command Not Found occurred while running cmd: {}'.format(command))
 
     if code != 0:
-        raise errors.WrongExitCode('some err occured during the execution of cmd {} err code {}'.format(command, code))
+        raise errors.WrongExitCode('Error occurred while running cmd: {} with err code: {}'.format(command, code))
 
     return out
 
@@ -240,7 +240,7 @@ def run_remote_check(host, path, command):
     code, out = run_remote(host, path, command)
 
     if code != 0:
-        raise errors.WrongExitCode('some err occured during the execution of cmd {} err code {}'.format(command, code))
+        raise errors.WrongExitCode('Error occurred while remote running cmd: {} with error code: {}'.format(command, code))
 
     return out
 
