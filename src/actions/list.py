@@ -6,7 +6,7 @@ def print_list(db):
     assert isinstance(db, utils.DB)
 
     print('----------------------------------------')
-    print('latest host:', db.latest_host)
+    print('latest host:', db.latest_host, 'latest tag:', db.latest_tag)
     print('----------------------------------------')
 
     table = []
