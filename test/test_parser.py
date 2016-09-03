@@ -43,10 +43,6 @@ class ParserTest(unittest.TestCase):
         self.assertIsNone(args.path)
         self.assertListEqual(args.command, ['python', 'test.py', 'a', '--b=c'], )
 
-    def test_run_err_without_tag(self):
-        import argparse
-        self.assertRaises(argparse.ArgumentError, parseargs, ['run', 'python', 'test.py', 'a', '--b=c'])
-
     def test_restart(self):
         args = parseargs(['restart', 'tag'])
         print(args)

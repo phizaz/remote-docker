@@ -7,8 +7,9 @@ class Files(object):
 
 
 class DB(object):
-    def __init__(self, latest_host, jobs):
+    def __init__(self, latest_host, latest_tag, jobs):
         self.latest_host = latest_host
+        self.latest_tag = latest_tag
         self.jobs = jobs
 
     def add_job(self, job):
@@ -19,8 +20,12 @@ class DB(object):
         self.jobs.remove(job)
         self.save()
 
-    def update_latest(self, host):
+    def update_latest_host(self, host):
         self.latest_host = host
+        self.save()
+
+    def update_latest_tag(self, tag):
+        self.latest_tag = tag
         self.save()
 
     def get_job_by_tag(self, tag):
@@ -38,6 +43,7 @@ class DB(object):
     def dict(self):
         return {
             'latest_host': self.latest_host,
+            'latest_tag': self.latest_tag,
             'jobs': [
                 job.dict()
                 for job in self.jobs
@@ -46,7 +52,9 @@ class DB(object):
 
     @classmethod
     def parse(cls, d):
-        return DB(latest_host=d['latest_host'],
+        assert isinstance(d, dict)
+        return DB(latest_host=d.get('latest_host', None),
+                  latest_tag=d.get('latest_tag', None),
                   jobs=[
                       Job.parse(each)
                       for each in d['jobs']
@@ -56,7 +64,7 @@ class DB(object):
     def load(cls):
         from os.path import exists
         if not exists(path_file_db()):
-            db = DB(None, [])
+            db = DB(None, None, [])
             db.save()
             return db
         else:

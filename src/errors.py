@@ -2,6 +2,8 @@ class RemoteDockerError(Exception): pass
 
 class ArgumentError(RemoteDockerError): pass
 
+class LatestTagNotFound(RemoteDockerError): pass
+
 class TagNotFound(RemoteDockerError): pass
 
 class HostNotFound(RemoteDockerError): pass

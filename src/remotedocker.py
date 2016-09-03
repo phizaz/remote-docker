@@ -1,5 +1,5 @@
-
 __version__ = '0.4'
+
 
 def act_list(args):
     from src.actions.list import print_list
@@ -11,6 +11,15 @@ def act_list(args):
 def act_run_old(args):
     from src import utils
     db = utils.DB.load()
+
+    if not args.tag:
+        # provide some default tag
+        args.tag = db.latest_tag
+
+    if args.tag is None:
+        raise utils.errors.LatestTagNotFound(
+            'There is no latest tag, we cannot make a good guess for you, please provide it explicitly')
+
     job = db.get_job_by_tag(args.tag)
 
     if args.host:
@@ -33,7 +42,7 @@ def act_run_new(args):
 
     if not args.host:
         if not db.latest_host:
-            raise utils.errors.LatestHostNotFound('no default (latest) host, must explicitly provide one')
+            raise utils.errors.LatestHostNotFound('No default (latest) host, must explicitly provide one')
         args.host = db.latest_host
 
     if not args.path:
@@ -43,7 +52,7 @@ def act_run_new(args):
 
     try:
         job = db.get_job_by_tag(args.tag)
-        raise utils.errors.JobDuplicate('job duplicate with tag: {} host: {}'.format(job.tag, job.hosts))
+        raise utils.errors.JobDuplicate('Job duplicate with tag: {} host: {}'.format(job.tag, job.hosts))
     except utils.errors.TagNotFound:
         # no job duplicate great!
         pass
@@ -88,12 +97,14 @@ def act_remove(args):
     db = utils.DB.load()
     remove.remove(args.tag, db)
 
+
 def act_quit(signal, frame, args):
     print('Exiting ...')
     print('You can continue your work by:')
     print('$ rdocker run --tag={}'.format(args.tag))
     import sys
     sys.exit(0)
+
 
 def main():
     # init ignore if not exist
@@ -127,6 +138,7 @@ def main():
     except utils.errors.RemoteDockerError as e:
         print(e)
         sys.exit(1)
+
 
 if __name__ == '__main__':
     main()

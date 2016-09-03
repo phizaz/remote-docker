@@ -101,6 +101,9 @@ class NormalFlow(Flow):
 
 def run(job, db, flow_cls=NormalFlow):
     assert issubclass(flow_cls, Flow), 'flow_cls must be inherited from Flow'
-    db.update_latest(job.using_host)
+    # set latest tag, host
+    db.update_latest_host(job.using_host)
+    db.update_latest_tag(job.tag)
+    # run
     flow = flow_cls(job=job, db=db)
     return flow.start()

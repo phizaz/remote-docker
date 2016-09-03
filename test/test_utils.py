@@ -9,6 +9,7 @@ class UtilsTest(unittest.TestCase):
         a = arrow.utcnow()
         d = {
             'latest_host': 'a',
+            'latest_tag': 'latest_tag',
             'jobs': [
                 {
                     'tag': 'tag',
@@ -26,6 +27,7 @@ class UtilsTest(unittest.TestCase):
         }
         db = utils.DB.parse(d)
         self.assertEqual(db.latest_host, 'a')
+        self.assertEqual(db.latest_tag, 'latest_tag')
         self.assertIsInstance(db.jobs[0], utils.Job)
         self.assertEqual(db.jobs[0].tag, 'tag')
 
@@ -34,6 +36,7 @@ class UtilsTest(unittest.TestCase):
         a = arrow.utcnow()
         d = {
             'latest_host': 'a',
+            'latest_tag': 'latest_tag',
             'jobs': [
                 {
                     'tag': 'tag',
