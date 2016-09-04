@@ -1,4 +1,4 @@
-__version__ = '0.9'
+__version__ = '0.10'
 
 
 def act_list(args):
@@ -27,10 +27,15 @@ def act_run_old(args):
         job.set_using_host(args.host)
         db.save()
 
-    if args.docker:
-        print('Run using docker: {}'.format(args.docker))
-        job.set_docker(args.docker)
-        db.save()
+    if not args.docker:
+        latest_docker = db.get_latest('docker')
+        if not latest_docker:
+            latest_docker = 'docker'
+        args.docker = latest_docker
+
+    print('Run using docker: {}'.format(args.docker))
+    job.set_docker(args.docker)
+    db.save()
 
     from src.actions import run
     run.run(job, db, run.NormalFlow)
@@ -52,6 +57,12 @@ def act_run_new(args):
     if not args.path:
         args.path = db.get_path_by_host(args.host)
 
+    if not args.docker:
+        latest_docker = db.get_latest('docker')
+        if not latest_docker:
+            latest_docker = 'docker'
+        args.docker = latest_docker
+
     # search for existing job for duplicates
 
     try:
@@ -61,6 +72,7 @@ def act_run_new(args):
         # no job duplicate great!
         pass
 
+    print('Run using docker: {}'.format(args.docker))
     job = utils.Job(tag=args.tag,
                     hosts=[args.host],
                     using_host=args.host,

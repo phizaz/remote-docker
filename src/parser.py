@@ -28,7 +28,7 @@ def parseargs(argv):
     parse_run.add_argument('--tag', help='a tag, latest used if not provided (only for running the old tag)')
     parse_run.add_argument('--host', help='host')
     parse_run.add_argument('--path', help='remote path')
-    parse_run.add_argument('--docker', default='docker',
+    parse_run.add_argument('--docker',
                            help='docker executable, you can provide this value to be something like `nvidia-docker` (default: docker)')
     parse_run.set_defaults(action=Actions.RUN)
 
