@@ -1,4 +1,4 @@
-__version__ = '0.8'
+__version__ = '0.9'
 
 
 def act_list(args):
@@ -84,6 +84,11 @@ def act_restart(args):
     from src.actions import restart
     from src import utils
     db = utils.DB.load()
+
+    if not args.tag:
+        # provide some default tag
+        args.tag = db.latest_tag
+
     restart.restart(args.tag, db)
 
 
@@ -91,6 +96,11 @@ def act_stop(args):
     from src.actions import stop
     from src import utils
     db = utils.DB.load()
+
+    if not args.tag:
+        # provide some default tag
+        args.tag = db.latest_tag
+
     stop.stop(args.tag, db)
 
 
@@ -99,6 +109,7 @@ def act_remove(args):
     from src import utils
     db = utils.DB.load()
     remove.remove(args.tag, db)
+
 
 def act_ssh(args):
     from src.actions import ssh
@@ -112,6 +123,7 @@ def act_ssh(args):
     host = job.using_host
 
     ssh.ssh(host, job.remote_path)
+
 
 def act_quit(signal, frame, args):
     print('Exiting ...')
