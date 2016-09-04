@@ -69,3 +69,12 @@ class ParserTest(unittest.TestCase):
         self.assertEqual(args.tag, 'tag')
 
         self.assertRaises(utils.errors.ArgumentError, parseargs, ['rm'])
+
+    def test_ssh(self):
+        args = parseargs(['ssh', 'tag'])
+        print(args)
+        self.assertEqual(args.action, Actions.SSH)
+        self.assertEqual(args.tag, 'tag')
+
+        args = parseargs(['ssh'])
+        self.assertEqual(args.action, Actions.SSH)

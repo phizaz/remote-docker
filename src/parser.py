@@ -4,6 +4,8 @@ class Actions(object):
     RESTART = 'RESTART'
     STOP = 'STOP'
     REMOVE = 'REMOVE'
+    SSH = 'SSH'
+
 
 def parseargs(argv):
     import argparse
@@ -13,7 +15,9 @@ def parseargs(argv):
             raise argparse.ArgumentError(None, message)
 
     from .remotedocker import __version__
-    parser = ExceptionHandledArgumentParser('RemoteDocker (version {}) : Run your script in a docker on another machine as if it were on yours'.format(__version__))
+    parser = ExceptionHandledArgumentParser(
+        'RemoteDocker (version {}) : Run your script in a docker on another machine as if it were on yours'.format(
+            __version__))
     subparse = parser.add_subparsers()
 
     parse_list = subparse.add_parser('list')
@@ -24,7 +28,8 @@ def parseargs(argv):
     parse_run.add_argument('--tag', help='a tag, latest used if not provided (only for running the old tag)')
     parse_run.add_argument('--host', help='host')
     parse_run.add_argument('--path', help='remote path')
-    parse_run.add_argument('--docker', default='docker', help='docker executable, you can provide this value to be something like `nvidia-docker` (default: docker)')
+    parse_run.add_argument('--docker', default='docker',
+                           help='docker executable, you can provide this value to be something like `nvidia-docker` (default: docker)')
     parse_run.set_defaults(action=Actions.RUN)
 
     parse_restart = subparse.add_parser('restart')
@@ -39,8 +44,16 @@ def parseargs(argv):
     parse_remove.add_argument('tag', help='a tag, you must specify this explicitly')
     parse_remove.set_defaults(action=Actions.REMOVE)
 
+    parse_ssh = subparse.add_parser('ssh')
+    parse_ssh.add_argument('tag', nargs='?', help='a tag of which host we will ssh into')
+    parse_ssh.set_defaults(action=Actions.SSH)
+
     try:
         args = parser.parse_args(argv)
+
+        if not getattr(args, 'action', None):
+            raise argparse.ArgumentError(None, 'No action provided')
+
         return args
     except argparse.ArgumentError as e:
         from src import utils

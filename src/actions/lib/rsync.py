@@ -1,7 +1,7 @@
 def rsync_up_command(host, remote_path):
     from src.utils import Files
     command = [
-        'rsync', '-a', '--delete', '--verbose',
+        'rsync', '-az', '--delete', '--verbose',
         '--exclude-from={}'.format(Files.IGNORE), './',
         '{host}:{path}'.format(host=host, path=remote_path)
     ]
@@ -15,7 +15,7 @@ def rsync_up(host, remote_path):
 def rsync_down_command(host, remote_path):
     from src.utils import Files
     command = [
-        'rsync', '-au', '--verbose',
+        'rsync', '-az', '--update', '--verbose',
         '--exclude-from={}'.format(Files.IGNORE),
         '{host}:{path}/'.format(host=host, path=remote_path),
         './'

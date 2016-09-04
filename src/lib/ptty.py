@@ -10,7 +10,6 @@ STDOUT_FD = sys.stdout.fileno()
 
 class PTY(object):
     def __init__(self):
-        self.mode = None
         self.log = ''
         self.pty = None
 
@@ -70,7 +69,7 @@ class PTY(object):
         data = self._read_stdin(1024)
         if not data:
             return False
-        self.pty.write(data)
+        self.pty.write(data.decode('utf-8'))
         return True
 
     def _read_stdin(self, bufsize):

@@ -1,4 +1,4 @@
-__version__ = '0.7'
+__version__ = '0.8'
 
 
 def act_list(args):
@@ -100,6 +100,18 @@ def act_remove(args):
     db = utils.DB.load()
     remove.remove(args.tag, db)
 
+def act_ssh(args):
+    from src.actions import ssh
+    from src import utils
+    db = utils.DB.load()
+
+    if not args.tag:
+        args.tag = db.latest_tag
+
+    job = db.get_job_by_tag(args.tag)
+    host = job.using_host
+
+    ssh.ssh(host, job.remote_path)
 
 def act_quit(signal, frame, args):
     print('Exiting ...')
@@ -110,33 +122,35 @@ def act_quit(signal, frame, args):
 
 
 def main():
-    # init ignore if not exist
-    from os.path import exists
+    import sys
     from src import utils
 
-    if not exists(utils.path_file_ignore()):
-        print('initiating a new .remotedignore, change it to suit your need')
-        utils.init_ignore()
-
-    import sys
-    from src.parser import parseargs, Actions
-    args = parseargs(sys.argv[1:])
-
-    # register signal
-    import signal
-    import functools
-    signal.signal(signal.SIGINT, functools.partial(act_quit, args=args))
-
-    func_map = {
-        Actions.LIST: act_list,
-        Actions.RUN: act_run,
-        Actions.RESTART: act_restart,
-        Actions.STOP: act_stop,
-        Actions.REMOVE: act_remove,
-    }
-
-    # call function
     try:
+        # init ignore if not exist
+        from os.path import exists
+
+        if not exists(utils.path_file_ignore()):
+            print('initiating a new .remotedignore, change it to suit your need')
+            utils.init_ignore()
+
+        from src.parser import parseargs, Actions
+        args = parseargs(sys.argv[1:])
+
+        # register signal
+        import signal
+        import functools
+        signal.signal(signal.SIGINT, functools.partial(act_quit, args=args))
+
+        func_map = {
+            Actions.LIST: act_list,
+            Actions.RUN: act_run,
+            Actions.RESTART: act_restart,
+            Actions.STOP: act_stop,
+            Actions.REMOVE: act_remove,
+            Actions.SSH: act_ssh,
+        }
+
+        # call function
         func_map[args.action](args)
     except utils.errors.RemoteDockerError as e:
         print(e)
