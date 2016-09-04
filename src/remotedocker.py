@@ -14,7 +14,7 @@ def act_run_old(args):
 
     if not args.tag:
         # provide some default tag
-        args.tag = db.latest_tag
+        args.tag = db.get_latest('tag')
 
     if args.tag is None:
         raise utils.errors.LatestTagNotFound(
@@ -44,9 +44,10 @@ def act_run_new(args):
         raise utils.errors.ArgumentError('Tag not provided')
 
     if not args.host:
-        if not db.latest_host:
+        latest_host = db.get_latest('using_host')
+        if not latest_host:
             raise utils.errors.LatestHostNotFound('No default (latest) host, must explicitly provide one')
-        args.host = db.latest_host
+        args.host = latest_host
 
     if not args.path:
         args.path = db.get_path_by_host(args.host)
@@ -87,7 +88,7 @@ def act_restart(args):
 
     if not args.tag:
         # provide some default tag
-        args.tag = db.latest_tag
+        args.tag = db.get_latest('tag')
 
     restart.restart(args.tag, db)
 
@@ -99,7 +100,7 @@ def act_stop(args):
 
     if not args.tag:
         # provide some default tag
-        args.tag = db.latest_tag
+        args.tag = db.get_latest('tag')
 
     stop.stop(args.tag, db)
 
@@ -117,7 +118,7 @@ def act_ssh(args):
     db = utils.DB.load()
 
     if not args.tag:
-        args.tag = db.latest_tag
+        args.tag = db.get_latest('tag')
 
     job = db.get_job_by_tag(args.tag)
     host = job.using_host

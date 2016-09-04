@@ -8,8 +8,18 @@ class UtilsTest(unittest.TestCase):
         import arrow
         a = arrow.utcnow()
         d = {
-            'latest_host': 'a',
-            'latest_tag': 'latest_tag',
+            'latest_job': {
+                'tag': 'tag',
+                'hosts': ['host1', 'host2'],
+                'using_host': 'host1',
+                'step': 'step',
+                'docker': 'docker',
+                'remote_path': 'remote_path',
+                'command': 'command',
+                'start_time': str(a),
+                'container': 'container',
+                'oth': dict(a=10),
+            },
             'jobs': [
                 {
                     'tag': 'tag',
@@ -26,17 +36,67 @@ class UtilsTest(unittest.TestCase):
             ]
         }
         db = utils.DB.parse(d)
-        self.assertEqual(db.latest_host, 'a')
-        self.assertEqual(db.latest_tag, 'latest_tag')
+        self.assertDictEqual(db.latest_job.dict(), d['latest_job'])
         self.assertIsInstance(db.jobs[0], utils.Job)
         self.assertEqual(db.jobs[0].tag, 'tag')
+
+    def test_DB_get_latest(self):
+        from os import remove
+        remove(utils.path_file_db())
+
+        db = utils.DB.load()
+        self.assertEqual(db.get_latest('tag'), None)
+
+        import arrow
+        a = arrow.utcnow()
+        d = {
+            'latest_job': {
+                'tag': 'tag',
+                'hosts': ['host1', 'host2'],
+                'using_host': 'host1',
+                'step': 'step',
+                'docker': 'docker',
+                'remote_path': 'remote_path',
+                'command': 'command',
+                'start_time': str(a),
+                'container': 'container',
+                'oth': dict(a=10),
+            },
+            'jobs': [
+                {
+                    'tag': 'tag',
+                    'hosts': ['host1', 'host2'],
+                    'using_host': 'host1',
+                    'step': 'step',
+                    'docker': 'docker',
+                    'remote_path': 'remote_path',
+                    'command': 'command',
+                    'start_time': str(a),
+                    'container': 'container',
+                    'oth': dict(a=10),
+                }
+            ]
+        }
+        db = utils.DB.parse(d)
+        self.assertEqual(db.get_latest('tag'), 'tag')
+        self.assertEqual(db.get_latest('somethingnotthere'), None)
 
     def test_DB_load_dict_save(self):
         import arrow
         a = arrow.utcnow()
         d = {
-            'latest_host': 'a',
-            'latest_tag': 'latest_tag',
+            'latest_job': {
+                'tag': 'tag',
+                'hosts': ['host1', 'host2'],
+                'using_host': 'host1',
+                'step': 'step',
+                'docker': 'docker',
+                'remote_path': 'remote_path',
+                'command': 'command',
+                'start_time': str(a),
+                'container': 'container',
+                'oth': dict(a=10),
+            },
             'jobs': [
                 {
                     'tag': 'tag',

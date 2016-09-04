@@ -7,9 +7,8 @@ class Files(object):
 
 
 class DB(object):
-    def __init__(self, latest_host, latest_tag, jobs):
-        self.latest_host = latest_host
-        self.latest_tag = latest_tag
+    def __init__(self, latest_job, jobs):
+        self.latest_job = latest_job
         self.jobs = jobs
 
     def add_job(self, job):
@@ -20,13 +19,14 @@ class DB(object):
         self.jobs.remove(job)
         self.save()
 
-    def update_latest_host(self, host):
-        self.latest_host = host
+    def update_latest_job(self, job):
+        self.latest_job = job
         self.save()
 
-    def update_latest_tag(self, tag):
-        self.latest_tag = tag
-        self.save()
+    def get_latest(self, attr):
+        if self.latest_job:
+            return getattr(self.latest_job, attr, None)
+        return None
 
     def get_job_by_tag(self, tag):
         for job in self.jobs:
@@ -42,8 +42,7 @@ class DB(object):
 
     def dict(self):
         return {
-            'latest_host': self.latest_host,
-            'latest_tag': self.latest_tag,
+            'latest_job': self.latest_job.dict() if self.latest_job else None,
             'jobs': [
                 job.dict()
                 for job in self.jobs
@@ -53,8 +52,12 @@ class DB(object):
     @classmethod
     def parse(cls, d):
         assert isinstance(d, dict)
-        return DB(latest_host=d.get('latest_host', None),
-                  latest_tag=d.get('latest_tag', None),
+        latest_job = d.get('latest_job', None)
+
+        if latest_job is not None:
+            latest_job = Job.parse(latest_job)
+
+        return DB(latest_job=latest_job,
                   jobs=[
                       Job.parse(each)
                       for each in d['jobs']
@@ -64,7 +67,7 @@ class DB(object):
     def load(cls):
         from os.path import exists
         if not exists(path_file_db()):
-            db = DB(None, None, [])
+            db = DB(None, [])
             db.save()
             return db
         else:
@@ -190,7 +193,7 @@ def run_local(command):
     for line in iter(p.stdout.readline, b''):
         line = line.decode('utf-8')
         output.append(line.strip())
-        sys.stdout.write(line) # also output to the screen
+        sys.stdout.write(line)  # also output to the screen
 
     code = p.wait()
 
@@ -248,7 +251,8 @@ def run_remote_check(host, path, command):
     code, out = run_remote(host, path, command)
 
     if code != 0:
-        raise errors.WrongExitCode('Error occurred while remote running cmd: {} with error code: {}'.format(command, code))
+        raise errors.WrongExitCode(
+            'Error occurred while remote running cmd: {} with error code: {}'.format(command, code))
 
     return out
 
