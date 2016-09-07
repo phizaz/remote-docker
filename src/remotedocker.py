@@ -1,4 +1,4 @@
-__version__ = '0.11'
+__version__ = '0.12'
 
 
 def act_list(args):
