@@ -2,7 +2,8 @@ import unittest
 from src import utils
 
 # remote_host = 'ta@desktop.dyn.konpat.me'
-remote_host = 'ta@konpat.thddns.net:3830'
+# remote_host = 'ta@konpat.thddns.net:3830'
+remote_host = 'ta@192.168.1.106'
 
 class UtilsTest(unittest.TestCase):
     def test_DB_parse(self):

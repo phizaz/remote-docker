@@ -5,5 +5,5 @@ def ssh(host, path):
 
     from src import utils
     _host, _port = utils.resolve_host_port(host)
-    os.execvp('ssh', ['ssh', '-t', '-p', str(_port), _host, 'cd', path, ';', 'bash'])
+    os.execvp('ssh', ['ssh', '-t', '-p', _port, _host, 'cd', path, ';', 'bash'])
 
