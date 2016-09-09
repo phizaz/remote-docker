@@ -3,7 +3,7 @@ from src.actions import run
 from src import utils
 
 # remote_host = 'ta@desktop.dyn.konpat.me'
-remote_host = 'ta@192.168.1.45'
+remote_host = 'ta@192.168.1.106'
 
 class RunTest(unittest.TestCase):
 
@@ -11,7 +11,7 @@ class RunTest(unittest.TestCase):
 
         utils.init_ignore()
 
-        db = utils.DB(None, None, [
+        db = utils.DB(None, [
             utils.Job(tag='test_normal_flow',
                       hosts=[remote_host],
                       using_host=remote_host,
@@ -37,7 +37,7 @@ class RunTest(unittest.TestCase):
 
         utils.init_ignore()
 
-        db = utils.DB(None, None, [
+        db = utils.DB(None, [
             utils.Job(tag='test_normal_flow_err',
                       hosts=[remote_host],
                       using_host=remote_host,
