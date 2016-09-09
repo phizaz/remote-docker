@@ -33,7 +33,8 @@ Steps:
 import src.utils
 import test.utils
 
-remote_host = 'ta@desktop.dyn.konpat.me'
+# remote_host = 'ta@desktop.dyn.konpat.me'
+remote_host = 'ta@192.168.1.106'
 
 
 class CLITest(unittest.TestCase):
@@ -48,8 +49,8 @@ class CLITest(unittest.TestCase):
         from os.path import join
         file = join(src.utils.path_src(), 'remotedocker.py')
         self.assertRaises(Exception, test.utils.run_python,
-            file, 'run', '--host=something', '--path=somepath', 'echo', 'test'
-        )
+                          file, 'run', '--host=something', '--path=somepath', 'echo', 'test'
+                          )
 
         from os import remove
         remove(src.utils.path_file_ignore())
@@ -260,26 +261,25 @@ class CLITest(unittest.TestCase):
         Restart the succeeded run
         '''
         print('=====RESTART=====')
-        self.assertRaises(Exception, test.utils.run_python, file, 'restart', 'test_full_first')
+        test.utils.run_python(file, 'restart')
 
         '''
         Stop the succeeded run
         '''
         print('=====STOP THE SUCCEEDED RUN=====')
-        self.assertRaises(Exception, test.utils.run_python, file, 'stop', 'test_full_first')
+        self.assertRaises(test.utils.run_python, file, 'stop')
 
         '''
         Remove the first run
         '''
         print('=====REMOVE THE FIRST RUN=====')
+        self.assertRaises(Exception, test.utils.run_python, file, 'rm')
         test.utils.run_python(file, 'rm', 'test_full_first')
 
         db = utils.DB.load()
         self.assertEqual(len(db.jobs), 1)
         self.assertEqual(db.jobs[0].tag, 'test_full_second')
 
-
         from os import remove
         remove(utils.path_file_ignore())
         remove(utils.path_file_db())
-
