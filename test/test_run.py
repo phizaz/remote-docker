@@ -26,8 +26,7 @@ class RunTest(unittest.TestCase):
 
         _db = utils.DB.load()
         print(_db.dict())
-        self.assertEqual(_db.latest_host, remote_host)
-        self.assertEqual(_db.latest_tag, 'test_normal_flow')
+        self.assertDictEqual(_db.latest_job.dict(), db.jobs[0].dict())
 
         from os import remove
         remove(utils.path_file_ignore())
@@ -49,8 +48,7 @@ class RunTest(unittest.TestCase):
         self.assertRaises(utils.errors.WrongExitCode, run.run, db.jobs[0], db, run.NormalFlow)
 
         _db = utils.DB.load()
-        self.assertEqual(_db.latest_tag, 'test_normal_flow_err')
-        self.assertEqual(_db.latest_host, remote_host)
+        self.assertDictEqual(_db.latest_job.dict(), db.jobs[0].dict())
 
         from os import remove
         remove(utils.path_file_ignore())
