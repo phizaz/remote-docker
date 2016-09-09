@@ -240,8 +240,9 @@ def run_local_with_tty_check_return_last(command):
 
 
 def run_remote(host, path, command):
+    _host, _port = resolve_host_port(host)
     cmd = [
-        'ssh', '-T', '{host}'.format(host=host),
+        'ssh', '-T', '-p', _port, _host,
         'cd {path} && {command}'.format(path=path, command=' '.join(command))
     ]
     return run_local(cmd)
@@ -263,8 +264,9 @@ def run_remote_check_return_last(host, path, command):
 
 
 def run_remote_with_tty_check(host, path, command):
+    _host, _port = resolve_host_port(host)
     cmd = [
-        'ssh', '-t', '{host}'.format(host=host),
+        'ssh', '-t', '-p', _port, _host,
         'cd {path} && {command}'.format(path=path, command=' '.join(command))
     ]
     out = run_local_with_tty_check(cmd)
@@ -277,3 +279,11 @@ def run_remote_with_tty_check(host, path, command):
 def run_remote_with_tty_check_return_last(host, path, command):
     out = run_remote_with_tty_check(host, path, command)
     return out[-1]
+
+
+def resolve_host_port(host):
+    tokens = host.split(':')
+    if len(tokens) == 1:
+        return tokens[0], 22
+    else:
+        return tokens[0], tokens[1]

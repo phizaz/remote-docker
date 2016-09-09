@@ -1,7 +1,8 @@
 import unittest
 from src import utils
 
-remote_host = 'ta@desktop.dyn.konpat.me'
+# remote_host = 'ta@desktop.dyn.konpat.me'
+remote_host = 'ta@konpat.thddns.net:3830'
 
 class UtilsTest(unittest.TestCase):
     def test_DB_parse(self):
@@ -42,7 +43,9 @@ class UtilsTest(unittest.TestCase):
 
     def test_DB_get_latest(self):
         from os import remove
-        remove(utils.path_file_db())
+        from os.path import exists
+        if exists(utils.path_file_db()):
+            remove(utils.path_file_db())
 
         db = utils.DB.load()
         self.assertEqual(db.get_latest('tag'), None)

@@ -3,20 +3,22 @@ from src.actions.lib import rsync
 from src import utils
 
 # remote_host = 'ta@desktop.dyn.konpat.me'
-remote_host = 'ta@192.168.1.45'
+# remote_host = 'ta@192.168.1.106'
+remote_host = 'ta@konpat.thddns.net:3830'
+
 
 class RsyncTest(unittest.TestCase):
     def test_rsync_up_command(self):
         c = rsync.rsync_up_command('some@host', '/some/path')
         print(c)
-        self.assertListEqual(c, ['rsync', '-az', '--delete', '--verbose', '--exclude-from=.remotedignore', './',
-                                 'some@host:/some/path'])
+        self.assertListEqual(c, ['rsync', '-az', '-e', 'ssh -p 22', '--delete', '--verbose', '--progress',
+                                 '--exclude-from=.remotedignore', './', 'some@host:/some/path'])
 
     def test_rsync_down_command(self):
         c = rsync.rsync_down_command('some@host', '/some/path')
         print(c)
-        self.assertListEqual(c, ['rsync', '-az', '--update', '--verbose', '--exclude-from=.remotedignore', 'some@host:/some/path/',
-                                 './'])
+        self.assertListEqual(c, ['rsync', '-az', '--rsh=ssh -p 22', '--update', '--verbose', '--progress',
+                                 '--exclude-from=.remotedignore', 'some@host:/some/path/', './'])
 
     def test_rsync_up(self):
         utils.init_ignore()
@@ -29,5 +31,3 @@ class RsyncTest(unittest.TestCase):
         rsync.rsync_down(remote_host, '~/Projects/test-remotedocker/rsync')
         from os import remove
         remove(utils.path_file_ignore())
-
-

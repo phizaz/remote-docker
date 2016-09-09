@@ -26,8 +26,8 @@ def parseargs(argv):
     parse_run = subparse.add_parser('run')
     parse_run.add_argument('command', nargs=argparse.REMAINDER)
     parse_run.add_argument('--tag', help='a tag, latest used if not provided (only for running the old tag)')
-    parse_run.add_argument('--host', help='host')
-    parse_run.add_argument('--path', help='remote path')
+    parse_run.add_argument('--host', help='a host, user@host[:port]')
+    parse_run.add_argument('--path', help='a remote path, can be a relative path on the remote host')
     parse_run.add_argument('--docker',
                            help='docker executable, you can provide this value to be something like `nvidia-docker` (default: docker)')
     parse_run.set_defaults(action=Actions.RUN)
