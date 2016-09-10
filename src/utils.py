@@ -269,7 +269,6 @@ def run_remote_with_tty_check(host, path, command):
         'ssh', '-t', '-p', _port, _host,
         'cd {path} && {command}'.format(path=path, command=' '.join(command))
     ]
-    print(cmd)
     out = run_local_with_tty_check(cmd)
     if 'Connection to' in out[-1]:
         # remove the text from ssh
