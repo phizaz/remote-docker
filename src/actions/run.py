@@ -66,7 +66,10 @@ class NormalFlow(Flow):
 
     def sync_up(self):
         from .lib.rsync import rsync_up
-        rsync_up(self.job.using_host, self.job.remote_path)
+        delete = not self.db.any_running()
+        if not delete:
+            print('Syncing up with update mode to preserve results from the other running jobs')
+        rsync_up(self.job.using_host, self.job.remote_path, delete=delete)
 
     def build(self):
         from .lib.docker import docker_build

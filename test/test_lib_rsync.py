@@ -14,6 +14,12 @@ class RsyncTest(unittest.TestCase):
         self.assertListEqual(c, ['rsync', '-az', '-e', 'ssh -p 22', '--delete', '--verbose', '--progress',
                                  '--exclude-from=.remotedignore', './', 'some@host:/some/path'])
 
+        c = rsync.rsync_up_command('some@host', '/some/path', False)
+        print(c)
+        self.assertListEqual(c, ['rsync', '-az', '-e', 'ssh -p 22', '', '--verbose', '--progress',
+                                 '--exclude-from=.remotedignore', './', 'some@host:/some/path'])
+
+
     def test_rsync_down_command(self):
         c = rsync.rsync_down_command('some@host', '/some/path')
         print(c)

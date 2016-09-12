@@ -28,6 +28,9 @@ class DB(object):
             return getattr(self.latest_job, attr, None)
         return None
 
+    def any_running(self):
+        return any(job.step is not None for job in self.jobs)
+
     def get_job_by_tag(self, tag):
         for job in self.jobs:
             if job.tag == tag:

@@ -42,6 +42,42 @@ class UtilsTest(unittest.TestCase):
         self.assertIsInstance(db.jobs[0], utils.Job)
         self.assertEqual(db.jobs[0].tag, 'tag')
 
+    def test_DB_any_running(self):
+        import arrow
+        a = arrow.utcnow()
+        d = {
+            'latest_job': {
+                'tag': 'tag',
+                'hosts': ['host1', 'host2'],
+                'using_host': 'host1',
+                'step': 'step',
+                'docker': 'docker',
+                'remote_path': 'remote_path',
+                'command': 'command',
+                'start_time': str(a),
+                'container': 'container',
+                'oth': dict(a=10),
+            },
+            'jobs': [
+                {
+                    'tag': 'tag',
+                    'hosts': ['host1', 'host2'],
+                    'using_host': 'host1',
+                    'step': 'step',
+                    'docker': 'docker',
+                    'remote_path': 'remote_path',
+                    'command': 'command',
+                    'start_time': str(a),
+                    'container': 'container',
+                    'oth': dict(a=10),
+                }
+            ]
+        }
+        db = utils.DB.parse(d)
+        self.assertTrue(db.any_running())
+        db.jobs[0].step = None
+        self.assertFalse(db.any_running())
+
     def test_DB_get_latest(self):
         from os import remove
         from os.path import exists
