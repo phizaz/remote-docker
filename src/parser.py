@@ -5,6 +5,7 @@ class Actions(object):
     STOP = 'STOP'
     REMOVE = 'REMOVE'
     SSH = 'SSH'
+    SYNC = 'SYNC'
 
 
 def parseargs(argv):
@@ -47,6 +48,10 @@ def parseargs(argv):
     parse_ssh = subparse.add_parser('ssh')
     parse_ssh.add_argument('tag', nargs='?', help='a tag of which host we will ssh into')
     parse_ssh.set_defaults(action=Actions.SSH)
+
+    parse_sync = subparse.add_parser('sync')
+    parse_sync.add_argument('tag', nargs='?', help='a tag of which host we will sync back from')
+    parse_sync.set_defaults(action=Actions.SYNC)
 
     try:
         args = parser.parse_args(argv)

@@ -78,3 +78,12 @@ class ParserTest(unittest.TestCase):
 
         args = parseargs(['ssh'])
         self.assertEqual(args.action, Actions.SSH)
+
+    def test_sync(self):
+        args = parseargs(['sync', 'tag'])
+        print(args)
+        self.assertEqual(args.action, Actions.SYNC)
+        self.assertEqual(args.tag, 'tag')
+
+        args = parseargs(['sync'])
+        self.assertEqual(args.action, Actions.SYNC)

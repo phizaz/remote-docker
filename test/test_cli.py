@@ -34,7 +34,7 @@ import src.utils
 import test.utils
 
 # remote_host = 'ta@desktop.dyn.konpat.me'
-remote_host = 'ta@192.168.1.106'
+remote_host = 'ta@192.168.1.104'
 
 
 class CLITest(unittest.TestCase):
@@ -220,6 +220,12 @@ class CLITest(unittest.TestCase):
                               '--host', remote_host,
                               '--path', '~/Projects/test-remotedocker/full',
                               'echo', 'test')
+
+        '''
+        Sync
+        '''
+        print('=====SYNC DOWN=====')
+        test.utils.run_python(file, 'sync')
 
         '''
         Run again

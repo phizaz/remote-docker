@@ -1,4 +1,4 @@
-__version__ = '0.15'
+__version__ = '0.16'
 
 
 def act_list(args):
@@ -138,6 +138,21 @@ def act_ssh(args):
     ssh.ssh(host, job.remote_path)
 
 
+def act_sync(args):
+    from src.actions import sync
+    from src import utils
+
+    db = utils.DB.load()
+
+    if not args.tag:
+        args.tag = db.get_latest('tag')
+
+    job = db.get_job_by_tag(args.tag)
+    host = job.using_host
+
+    sync.sync(host, job.remote_path)
+
+
 def act_quit(signal, frame, args):
     print('Exiting ...')
     print('You can continue your work by:')
@@ -173,6 +188,7 @@ def main():
             Actions.STOP: act_stop,
             Actions.REMOVE: act_remove,
             Actions.SSH: act_ssh,
+            Actions.SYNC: act_sync,
         }
 
         # call function
