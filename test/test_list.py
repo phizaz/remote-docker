@@ -15,6 +15,3 @@ class ListTest(unittest.TestCase):
         ])
 
         print_list(db)
-
-        from os import remove
-        remove(utils.path_file_db())

@@ -1,8 +1,10 @@
 def row_of(field, l):
     return list(map(lambda x: getattr(x, field), l))
 
+
 def join_list(items, delimiter=' '):
     return list(map(lambda x: delimiter.join(x), items))
+
 
 def print_list(db):
     from src import utils
@@ -15,16 +17,15 @@ def print_list(db):
     print('----------------------------------------')
 
     table = []
-    header = ['tag', 'using_host', 'command', 'step', 'remote_path', 'time_elapsed', 'all hosts', 'docker']
+    header = ['tag', 'using_host', 'command', 'step', 'remote_path', 'time_elapsed', 'docker']
 
     rows = zip(
         row_of('tag', db.jobs),
         row_of('using_host', db.jobs),
-        join_list(row_of('command', db.jobs)),
+        map(lambda str: str[-60:], join_list(row_of('command', db.jobs))),
         row_of('step', db.jobs),
         row_of('remote_path', db.jobs),
         list(map(lambda x: x.time_elapsed(), db.jobs)),
-        join_list(row_of('hosts', db.jobs), ', '),
         row_of('docker', db.jobs)
     )
 
@@ -32,4 +33,4 @@ def print_list(db):
     table += rows
 
     from tabulate import tabulate
-    print(tabulate(table, headers='firstrow', tablefmt='grid'))
+    print(tabulate(table, headers='firstrow'))
