@@ -158,6 +158,53 @@ class UtilsTest(unittest.TestCase):
         _db = utils.DB.load()
         self.assertDictEqual(db.dict(), _db.dict())
 
+    def test_DB_remove_job(self):
+        import arrow
+        a = arrow.utcnow()
+        d = {
+            'latest_job': {
+                'tag': 'tag',
+                'hosts': ['host1', 'host2'],
+                'using_host': 'host1',
+                'step': 'step',
+                'docker': 'docker',
+                'remote_path': 'remote_path',
+                'command': 'command',
+                'start_time': str(a),
+                'container': 'container',
+                'oth': dict(a=10),
+            },
+            'jobs': [
+                {
+                    'tag': 'tag',
+                    'hosts': ['host1', 'host2'],
+                    'using_host': 'host1',
+                    'step': 'step',
+                    'docker': 'docker',
+                    'remote_path': 'remote_path',
+                    'command': 'command',
+                    'start_time': str(a),
+                    'container': 'container',
+                    'oth': dict(a=10),
+                },
+                {
+                    'tag': 'tag2',
+                    'hosts': ['host1', 'host2'],
+                    'using_host': 'host1',
+                    'step': 'step',
+                    'docker': 'docker',
+                    'remote_path': 'remote_path',
+                    'command': 'command',
+                    'start_time': str(a),
+                    'container': 'container',
+                    'oth': dict(a=10),
+                }
+            ]
+        }
+        db = utils.DB.parse(d)
+        db.remove_job(utils.Job('tag', [], None, None, None, None))
+        self.assertEqual(len(db.jobs), 1)
+        self.assertEqual(db.jobs[0].tag, 'tag2')
 
     def test_Job_parse(self):
         import arrow

@@ -16,7 +16,8 @@ class DB(object):
         self.save()
 
     def remove_job(self, job):
-        self.jobs.remove(job)
+        assert isinstance(self.jobs, list)
+        self.jobs = list(filter(lambda x: x.tag != job.tag, self.jobs))
         self.save()
 
     def update_latest_job(self, job):
