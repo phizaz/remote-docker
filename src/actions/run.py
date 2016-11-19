@@ -47,8 +47,9 @@ class NormalFlow(Flow):
             self.job.step = Steps.LOG
             self.save()
         if self.job.step == Steps.LOG:
-            print('(4/6) Fetching logs')
-            log = self.log()
+            rows = 10000
+            print('(4/6) Fetching logs (latest = {} lines)'.format(rows))
+            log = self.log(rows=rows)
             self.job.step = Steps.REMOVE
             self.save()
         if self.job.step == Steps.REMOVE:
@@ -86,10 +87,10 @@ class NormalFlow(Flow):
                                docker=self.job.docker)
         self.job.container = container
 
-    def log(self):
+    def log(self, rows):
         from .lib.docker import docker_logs_check
         return docker_logs_check(self.job.using_host, self.job.remote_path, self.job.container,
-                                 docker=self.job.docker, log_rows=10000) # logs only latest 10,000 lines
+                                 docker=self.job.docker, log_rows=rows)
 
     def remove(self):
         from .lib.docker import docker_rm
