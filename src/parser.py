@@ -6,6 +6,7 @@ class Actions(object):
     REMOVE = 'REMOVE'
     SSH = 'SSH'
     SYNC = 'SYNC'
+    SYNC_UP = 'SYNC_UP'
 
 
 def parseargs(argv):
@@ -52,6 +53,10 @@ def parseargs(argv):
     parse_sync = subparse.add_parser('sync')
     parse_sync.add_argument('tag', nargs='?', help='a tag of which host we will sync back from')
     parse_sync.set_defaults(action=Actions.SYNC)
+
+    parse_sync_up = subparse.add_parser('syncup')
+    parse_sync_up.add_argument('tag', nargs='?', help='a tag of which host we will sync to')
+    parse_sync_up.set_defaults(action=Actions.SYNC_UP)
 
     try:
         args = parser.parse_args(argv)

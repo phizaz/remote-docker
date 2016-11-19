@@ -87,3 +87,12 @@ class ParserTest(unittest.TestCase):
 
         args = parseargs(['sync'])
         self.assertEqual(args.action, Actions.SYNC)
+
+    def test_sync_up(self):
+        args = parseargs(['syncup', 'tag'])
+        print(args)
+        self.assertEqual(args.action, Actions.SYNC_UP)
+        self.assertEqual(args.tag, 'tag')
+
+        args = parseargs(['syncup'])
+        self.assertEqual(args.action, Actions.SYNC_UP)

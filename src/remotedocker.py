@@ -153,6 +153,25 @@ def act_sync(args):
     sync.sync(host, job.remote_path)
 
 
+def act_sync_up(args):
+    from src.actions import sync_up
+    from src import utils
+
+    db = utils.DB.load()
+
+    if not args.tag:
+        args.tag = db.get_latest('tag')
+
+    job = db.get_job_by_tag(args.tag)
+    host = job.using_host
+
+    delete = not db.any_running()
+    if not delete:
+        print('Syncing up with update mode to preserve results from the other running jobs')
+
+    sync_up.sync_up(host, job.remote_path, delete=delete)
+
+
 def act_quit(signal, frame, args):
     print('Exiting ...')
     print('You can continue your work by:')
@@ -189,6 +208,7 @@ def main():
             Actions.REMOVE: act_remove,
             Actions.SSH: act_ssh,
             Actions.SYNC: act_sync,
+            Actions.SYNC_UP: act_sync_up,
         }
 
         # call function
