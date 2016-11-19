@@ -41,7 +41,7 @@ project_root
 2. Run using `run` command in the form `rdocker run --tag=<jobname> --host=<user@host> --path=<host_path> <command> <args...>`. In this very case, we will use `rdocker run --tag=test --host=some@host --path=/tmp/myproject python -u -m src`. What it really does is:
 	1. **Sync** (using `rsync`) the source code to the remote host, in this case, whole directory of `project_root` will be copied to the directory `/tmp/myproject` of the host, well there is some exceptions though you can define it using `.remotedignore`, which automatically initiated during the invocation of `rdocker`.
 	2. **Build**, the `Dockerfile` will be built under `docker build -t <jobname>`. By the way, you can have a docker executable of your choice! e.g. `nvidia-docker` all you need do is to state `--docker=nvidia-docker` in the `run` command.
-	3. **Run**, the designated command will be run inside a newly hatched container under the detach mode i.e. you don't have to be there and wait the process to finish.
+	3. **Run**, the designated command will be run inside a newly hatched container under the detach mode i.e. you don't have to be there and wait the process to finish. Automatically, it will mount the `remote_path` with `/run` in the container, read and write to there in the way to communicate with the outside world.
 	4. **Log**, all the output from that container will be live fed to your console, closing now won't budge the running container a bit.
 	5. **Sync Back**, after the process in done, all the changes on the remote dirtory will be synced back to your computer's `project_root`, don't fear it will destroy your new changes, it will only make change to old files. (`rsync -u`)
 

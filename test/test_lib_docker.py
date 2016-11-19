@@ -23,8 +23,9 @@ class DockerTest(unittest.TestCase):
 
     def test_docker_logs_command(self):
         command = docker.docker_logs_command('aoeu', 'docker')
-        print(command)
-        self.assertListEqual(command, ['docker', 'logs', '-f', 'aoeu'])
+        self.assertListEqual(command, ['docker', 'logs', '-f', '--tail=all', 'aoeu'])
+        command = docker.docker_logs_command('container', 'docker', 1000)
+        self.assertListEqual(command, ['docker', 'logs', '-f', '--tail=1000', 'container'])
 
     def test_docker_exit_code_command(self):
         command = docker.docker_exit_code_command('aoeu', 'docker')

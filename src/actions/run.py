@@ -89,7 +89,7 @@ class NormalFlow(Flow):
     def log(self):
         from .lib.docker import docker_logs_check
         return docker_logs_check(self.job.using_host, self.job.remote_path, self.job.container,
-                                 docker=self.job.docker)
+                                 docker=self.job.docker, log_rows=10000) # logs only latest 10,000 lines
 
     def remove(self):
         from .lib.docker import docker_rm

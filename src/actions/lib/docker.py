@@ -32,23 +32,23 @@ def docker_run(host, remote_path, image_tag, mount_path, command, docker='docker
     return container
 
 
-def docker_logs_command(container, docker='docker'):
+def docker_logs_command(container, docker='docker', log_rows='all'):
     command = [
-        docker, 'logs', '-f', container
+        docker, 'logs', '-f', '--tail={}'.format(log_rows), container
     ]
     return command
 
 
-def docker_logs(host, remote_path, container, docker='docker'):
-    command = docker_logs_command(container, docker)
+def docker_logs(host, remote_path, container, docker='docker', log_rows='all'):
+    command = docker_logs_command(container, docker=docker, log_rows=log_rows)
     from src import utils
     out = utils.run_remote_with_tty_check_return_last(host, remote_path, command)
     return out
 
 
-def docker_logs_check(host, remote_path, container, docker='docker'):
-    out = docker_logs(host, remote_path, container, docker)
-    exit_code = docker_exit_code(host, remote_path, container, docker)
+def docker_logs_check(host, remote_path, container, docker='docker', log_rows='all'):
+    out = docker_logs(host, remote_path, container, docker=docker, log_rows=log_rows)
+    exit_code = docker_exit_code(host, remote_path, container, docker=docker)
 
     if exit_code != 0:
         from src import utils
