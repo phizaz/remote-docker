@@ -1,0 +1,22 @@
+jobs:
+- command: command
+  container: container
+  docker: docker
+  hosts: [host1, host2]
+  oth: {a: 10}
+  remote_path: remote_path
+  start_time: '2016-09-19T15:41:08.631070+00:00'
+  step: step
+  tag: tag2
+  using_host: host1
+latest_job:
+  command: command
+  container: container
+  docker: docker
+  hosts: [host1, host2]
+  oth: {a: 10}
+  remote_path: remote_path
+  start_time: '2016-09-19T15:41:08.631070+00:00'
+  step: step
+  tag: tag
+  using_host: host1
