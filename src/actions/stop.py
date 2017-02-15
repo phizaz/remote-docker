@@ -1,4 +1,5 @@
-def stop(tag, db):
+def stop(tag, db, force):
+    assert isinstance(force, bool)
     from src import utils
     assert isinstance(db, utils.DB)
 
@@ -10,7 +11,13 @@ def stop(tag, db):
     if job.container:
         print('Stopping and removing the running container')
         from .lib.docker import docker_rm
-        docker_rm(job.using_host, job.remote_path, job.container, job.docker)
+        try:
+            docker_rm(job.using_host, job.remote_path, job.container, job.docker)
+        except Exception:
+            if not force:
+                raise
+            else:
+                print('there is a problem on removing the container, however since you force, it will be ignored.')
         job.container = None
         db.save()
 

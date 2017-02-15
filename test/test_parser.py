@@ -3,6 +3,7 @@ import unittest
 from src.parser import parseargs, Actions
 from src import utils
 
+
 class ParserTest(unittest.TestCase):
     def test_list(self):
         args = parseargs(['list'])
@@ -16,7 +17,8 @@ class ParserTest(unittest.TestCase):
 
     def test_run_with_host_and_path(self):
         args = parseargs(
-            ['run', '--docker=nvidia-docker', '--tag', 'sometag', '--host=some@host', '--path=/some/path', 'python', 'test.py', 'a', '--b=c'])
+            ['run', '--docker=nvidia-docker', '--tag', 'sometag', '--host=some@host', '--path=/some/path', 'python',
+             'test.py', 'a', '--b=c'])
         print(args)
         self.assertEqual(args.action, Actions.RUN)
         self.assertEqual(args.docker, 'nvidia-docker')
@@ -43,31 +45,51 @@ class ParserTest(unittest.TestCase):
         self.assertIsNone(args.path)
         self.assertListEqual(args.command, ['python', 'test.py', 'a', '--b=c'], )
 
-    def test_restart(self):
+    def test_restart_with_only_tag(self):
         args = parseargs(['restart', 'tag'])
-        print(args)
         self.assertEqual(args.action, Actions.RESTART)
         self.assertEqual(args.tag, 'tag')
+        self.assertFalse(args.force)
 
+    def test_restart_force(self):
+        args = parseargs(['restart', 'tag', '--force'])
+        self.assertEqual(args.action, Actions.RESTART)
+        self.assertEqual(args.tag, 'tag')
+        self.assertTrue(args.force)
+
+    def test_restart_with_no_tag(self):
         args = parseargs(['restart'])
         print(args)
         self.assertIsNone(args.tag)
 
-    def test_stop(self):
+    def test_stop_with_only_tag(self):
         args = parseargs(['stop', 'tag'])
-        print(args)
         self.assertEqual(args.action, Actions.STOP)
         self.assertEqual(args.tag, 'tag')
+        self.assertFalse(args.force)
 
+    def test_stop_with_force(self):
+        args = parseargs(['stop', 'tag', '--force'])
+        self.assertEqual(args.action, Actions.STOP)
+        self.assertEqual(args.tag, 'tag')
+        self.assertTrue(args.force)
+
+    def test_stop_with_no_tag(self):
         args = parseargs(['stop'])
         self.assertIsNone(args.tag)
 
-    def test_rm(self):
+    def test_rm_can_accept_tag(self):
         args = parseargs(['rm', 'tag'])
-        print(args)
         self.assertEqual(args.action, Actions.REMOVE)
         self.assertEqual(args.tag, 'tag')
+        self.assertFalse(args.force)
 
+    def test_rm_with_force_true(self):
+        args = parseargs(['rm', 'tag', '--force'])
+        self.assertEqual(args.action, Actions.REMOVE)
+        self.assertTrue(args.force)
+
+    def test_rm_no_tag_will_raise(self):
         self.assertRaises(utils.errors.ArgumentError, parseargs, ['rm'])
 
     def test_ssh(self):

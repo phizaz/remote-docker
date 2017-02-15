@@ -1,4 +1,4 @@
-__version__ = '0.19'
+__version__ = '0.20'
 
 
 def act_list(args):
@@ -102,7 +102,8 @@ def act_restart(args):
         # provide some default tag
         args.tag = db.get_latest('tag')
 
-    restart.restart(args.tag, db)
+    force = getattr(args, 'force', False)
+    restart.restart(args.tag, db, force)
 
 
 def act_stop(args):
@@ -114,14 +115,16 @@ def act_stop(args):
         # provide some default tag
         args.tag = db.get_latest('tag')
 
-    stop.stop(args.tag, db)
+    force = getattr(args, 'force', False)
+    stop.stop(args.tag, db, force)
 
 
 def act_remove(args):
     from src.actions import remove
     from src import utils
     db = utils.DB.load()
-    remove.remove(args.tag, db)
+    force = getattr(args, 'force', False)
+    remove.remove(args.tag, db, force)
 
 
 def act_ssh(args):

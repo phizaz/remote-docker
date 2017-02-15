@@ -36,14 +36,20 @@ def parseargs(argv):
 
     parse_restart = subparse.add_parser('restart')
     parse_restart.add_argument('tag', nargs='?', help='a tag, latest used if not provided')
+    parse_restart.add_argument('--force', action='store_true',
+                               help='if anything should go wrong, will you consent to still restart it?')
     parse_restart.set_defaults(action=Actions.RESTART)
 
     parse_stop = subparse.add_parser('stop')
     parse_stop.add_argument('tag', nargs='?', help='a tag, latest used if not provided')
+    parse_stop.add_argument('--force', action='store_true',
+                            help='if anything should go wrong, will you consent to still stop it?')
     parse_stop.set_defaults(action=Actions.STOP)
 
     parse_remove = subparse.add_parser('rm')
     parse_remove.add_argument('tag', help='a tag, you must specify this explicitly')
+    parse_remove.add_argument('--force', action='store_true',
+                              help='if anything should go wrong, will you consent to still remove it?')
     parse_remove.set_defaults(action=Actions.REMOVE)
 
     parse_ssh = subparse.add_parser('ssh')

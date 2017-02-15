@@ -1,12 +1,18 @@
 FROM python:3
 MAINTAINER Konpat Preechakul <the.akita.ta@gmail.com>
 
-COPY . /tmp
-RUN cd tmp \
-    && python setup.py install
-
 RUN apt-get update 
-RUN apt-get install -y openssh-client
-RUN apt-get install -y rsync
+RUN apt-get install -y --no-install-recommends openssh-client
+RUN apt-get install -y --no-install-recommends rsync
 
-CMD rdocker --help
+VOLUME ["/workdir"]
+
+WORKDIR /workdir
+
+RUN pip install future
+RUN pip install pyyaml
+RUN pip install arrow
+RUN pip install tabulate
+RUN pip install capturer
+RUN pip install ptyprocess
+
