@@ -50,7 +50,7 @@ class DB(object):
             'jobs': [
                 job.dict()
                 for job in self.jobs
-                ]
+            ]
         }
 
     @classmethod
@@ -65,7 +65,7 @@ class DB(object):
                   jobs=[
                       Job.parse(each)
                       for each in d['jobs']
-                      ])
+                  ])
 
     @classmethod
     def load(cls):

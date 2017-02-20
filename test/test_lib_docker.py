@@ -15,11 +15,11 @@ class DockerTest(unittest.TestCase):
         command = docker.docker_run_command('debian:jessie', '$(pwd)', ['cat', 'supplementary/hello.py'], 'nvidia-docker')
         print(command)
         self.assertListEqual(command,
-                             ['nvidia-docker', 'run', '-v $(pwd):/run', '-d', '-w', '/run', 'debian:jessie', 'cat',
+                             ['nvidia-docker', 'run', '--user', '${UID}', '-v $(pwd):/run', '-d', '-w', '/run', 'debian:jessie', 'cat',
                               'supplementary/hello.py'])
 
         command = docker.docker_run_command('debian:jessie', None, ['echo', 'test'], 'docker')
-        self.assertListEqual(command, ['docker', 'run', '-d', '-w', '/run', 'debian:jessie', 'echo', 'test'])
+        self.assertListEqual(command, ['docker', 'run', '--user', '${UID}', '-d', '-w', '/run', 'debian:jessie', 'echo', 'test'])
 
     def test_docker_logs_command(self):
         command = docker.docker_logs_command('aoeu', 'docker')

@@ -16,6 +16,8 @@ def docker_run_command(image_tag, mount_path, command, docker='docker'):
     mounting = '-v {}:{}'.format(mount_path, '/run')
     _command = [
         docker, 'run']
+    # run command with specific user, this ensures that files created from docker process will have the correct owner
+    _command += ['--user', '${UID}']
     if mount_path:
         _command.append(mounting)
     _command += [

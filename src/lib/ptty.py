@@ -4,9 +4,8 @@ import sys
 import signal
 from ptyprocess import PtyProcessUnicode
 
-STDIN_FD = sys.stdin.fileno()
-STDOUT_FD = sys.stdout.fileno()
-
+STDIN_FD = 0 # default stdin file number
+STDOUT_FD = 1 # default stdout file nuumber
 
 class PTY(object):
     def __init__(self):
